@@ -1,0 +1,49 @@
+#System dependent parameters
+
+#gfortran version linked with ATLAS
+
+FC=gfortran
+CC=gcc
+
+#optimization flags -xT holds for intel core 2 duo processor
+FFLAGS= -mtune=opteron -O3
+CFLAGS= -mtune=opteron -O3
+
+#debug flags
+# FFLAGS= -g -O0 -fbounds-check
+# CFLAGS= -g -O0
+
+INCL=-I.  -I/usr/include/ -I$(WORK_DIR)/SHTOOLS2.5_ariane/modules -I$(ROOT_DIR)/include -I$(WORK_DIR)/include 
+LIBP=-L.  -L/usr/local/lib/numerik -L$(WORK_DIR)/SHTOOLS2.5_ariane/lib -L$(ROOT_DIR)/lib -L$(WORK_DIR)/lib 
+
+
+#BLAS lapack AND FFTW libs
+LIBPERF=-lRLFtlbx -lfftw3 -llapack -lptf77blas -lptcblas -latlas -lpthread
+LIBPERF_SINGLE=-lRLFtlbx -lfftw3 -llapack -lf77blas64 -lcblas64 -latlas64
+
+#name of the output library
+LIBOUT=$(ROOT_DIR)/lib/libRLFtlbx.a
+
+INCGMT=-I${HOME}/this_gmt/include
+LIBGMT=-L${HOME}/this_gmt/lib -lgmt
+
+#SHTOOLS lib
+LIBSHTOOLS=-lSHTOOLS2.5
+
+#netcdflib
+LIBNETCDF=-lnetcdff
+
+#LIBCC (math lib needed for grdfilter2)
+LIBCC=-lgfortran
+
+#Library archiver and indexer
+AR = ar
+ARFLAGS = -s -r
+
+OMPFLAGS=-fopenmp
+
+
+#install directory
+INSTALL=/home/roelof/ariane_bin
+
+

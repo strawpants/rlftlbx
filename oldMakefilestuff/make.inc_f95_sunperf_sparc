@@ -1,0 +1,48 @@
+#System dependent parameters
+
+#SUN f95 linked with the sun performance library
+
+FC=f95
+CC=cc
+
+#optimization flags -xT holds for intel core 2 duo processor
+FFLAGS=-O2 -m64 -xarch=native -inline=auto
+CFLAGS=-O2 -m64 -xarch=native
+
+
+#debug flags
+# FFLAGS= -g -O0 
+# CFLAGS= -g -O0 
+
+INCL=-M. -M$(ROOT_DIR)/include -M$(WORK_DIR)/include 
+LIBP=-L.  -L$(ROOT_DIR)/lib -L$(WORK_DIR)/lib
+
+#name of the output library
+LIBOUT=$(ROOT_DIR)/lib/libRLFtlbx.a
+
+INCGMT=-I${HOME}/this_gmt/include -I$(HOME)/netcdf-lucy/include -O2 -m64 
+LIBGMT=-L${HOME}/this_gmt/lib -lgmt
+
+#SHTOOLS lib
+LIBSHTOOLS=-lSHTOOLS
+
+#netcdflib
+LIBNETCDF=-lnetcdf
+
+#BLAS lapack AND FFTW libs
+LIBPERF= -lRLFtlbx -lfftw3 -xlic_lib=sunperf
+
+#LIBCC (math lib needed for grdfilter2)
+LIBCC=-lsunmath -lm
+
+
+
+#Library archiver and indexer
+AR = ar
+ARFLAGS = -s -r
+
+OMPFLAGS=-openmp
+
+
+#install directory
+INSTALL=$(WORK_DIR)

@@ -1,0 +1,65 @@
+#make file to build the GRDtlbx library
+
+ifeq ($(ROOT_DIR),)
+	export ROOT_DIR=../
+else
+
+endif
+
+#system specific input
+include ../make.inc
+
+#programs
+PROG=OBP_normeq PSMSL_READ #grdfilter2 
+
+#library objects
+LIBOBJ =  NC_write.o OBP_obseq.o
+MODFILE=grdtlbx.mod psmsl_tool.mod
+MODOBJ=grdtlbx.o PSMSL_TOOL.o
+
+#########rules
+all:  mod libs prog
+
+mod: $(MODFILE)
+	cp $(MODFILE) ../include		
+
+libs: $(LIBOBJ) $(CLIBOBJ)
+	$(AR) $(ARFLAGS) $(LIBOUT) $(MODOBJ) $(LIBOBJ)
+
+# $(LIBOUT):$(LIBOBJ)
+# 	$(AR) $(ARFLAGS) $(LIBOUT) $(MODOBJ) $(LIBOBJ)
+
+prog:  $(PROG)
+
+install:
+	cp $(PROG) $(INSTALL)/bin
+
+
+#############program section
+
+OBP_normeq: $(LIBOUT) OBP_normeq.f90
+	$(FC) $(FFLAGS) -o $@ OBP_normeq.f90 $(INCL) $(LIBP) $(LIBPERF) $(LIBSHTOOLS) $(LIBNETCDF) 
+
+PSMSL_READ: $(LIBOUT) PSMSL_READ.f90
+	$(FC) $(FFLAGS) -o $@ PSMSL_READ.f90 $(INCL) $(LIBP) $(LIBPERF)
+
+grdfilter2:grdfilter2.c
+	$(CC) -o $@ grdfilter2.c $(INCGMT) $(LIBGMT) $(LIBP) $(LIBNETCDF) $(LIBCC)
+
+##########library section
+
+
+grdtlbx.mod: grdtlbx.f90
+	$(FC) -c $(FFLAGS)  grdtlbx.f90
+
+psmsl_tool.mod:PSMSL_TOOL.f90
+	$(FC) -c $(FFLAGS) $(INCL) PSMSL_TOOL.f90
+
+
+$(LIBOBJ):%.o:%.f90
+	$(FC) -c  $(FFLAGS) $< -o $@ $(INCL)
+
+clean:
+	rm -f *.o
+	rm -f *.mod
+	rm -f $(PROG)

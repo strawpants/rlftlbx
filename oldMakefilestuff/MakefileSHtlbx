@@ -1,0 +1,132 @@
+#Makefile for files in the SHtlbx
+ifeq ($(ROOT_DIR),)
+	export ROOT_DIR=..
+else
+
+endif
+
+include ../make.inc
+
+#programs
+PROG=SH_fit JKcov_2_BIN SH_decormatSW SH_prod2sum_mat_openmp SH_transmat SHiso_2_colat SH_axisload SH_designmat SH_sealevmat nc_2_SH SH_2_nc SH_dump SH_basinav SH_filter SH_prod2sum_mat SH_diagreg SH_degvar SH_2_pnt SHSELEN_xtract SH_gradMAT xyz_2_SH BIN_2_JKmat #SH_SLEQ
+
+#library objects
+LIBOBJ = rotfeedback.o index.o SH_gaus.o SH_read.o SH_geocmod.o SH_write.o SH_loadlove.o SH_tripint.o  SH_overlapint.o c20_replace.o SH_loadGIA_uplift_ratio.o SH_Love_d1_trans.o
+MODFILE=shtlbx.mod sh_trpnt.mod sh_synthesis.mod gia_func.mod
+MODOBJ=SHtlbx.o SH_trpnt_mem.o SH_synthesis.o  GIA_func.o
+
+#rules
+all: mod libs prog
+
+mod: $(MODFILE)
+	cp $(MODFILE) ../include		
+
+libs: $(LIBOBJ) $(CLIBOBJ)
+	$(AR) $(ARFLAGS) $(LIBOUT) $(MODOBJ) $(LIBOBJ) $(CLIBOBJ)
+
+# $(LIBOUT): $(LIBOBJ) $(CLIBOBJ)
+# 	$(AR) $(ARFLAGS) $(LIBOUT) $(MODOBJ) $(LIBOBJ) $(CLIBOBJ)
+
+prog: $(PROG)
+
+install:
+	cp $(PROG) $(INSTALL)/bin
+
+
+#############program section
+
+
+JKcov_2_BIN: $(LIBOUT) JKcov_2_BIN.f90
+	$(FC) $(FFLAGS) -o $@ JKcov_2_BIN.f90 $(FFLAGS)  $(INCL) $(LIBP) $(LIBPERF)
+
+BIN_2_JKmat: $(LIBOUT) BIN_2_JKmat.f90
+	$(FC) $(FFLAGS) -o $@ BIN_2_JKmat.f90 $(FFLAGS)  $(INCL) $(LIBP) $(LIBPERF)
+
+nc_2_SH: $(LIBOUT) nc_2_SH.f90
+	$(FC) $(FFLAGS) -o $@ nc_2_SH.f90 $(INCL) $(LIBP) $(LIBNETCDF) $(LIBSHTOOLS) $(LIBPERF)
+
+xyz_2_SH: $(LIBOUT) xyz_2_SH.f90
+	 $(FC) $(FFLAGS) $(OMPFLAGS) -o $@ xyz_2_SH.f90 $(INCL) $(LIBP) $(LIBSHTOOLS) $(LIBPERF)
+
+SH_2_nc: $(LIBOUT) SH_2_nc.f90
+	$(FC) $(FFLAGS) $(FUNROLL) $(OMPFLAGS) -o $@ SH_2_nc.f90 $(INCL) $(LIBP) $(LIBSHTOOLS) $(LIBPERF) $(LIBNETCDF) 
+#	$(FC) $(FFLAGS) -funroll-loops -o $@ SH_2_nc.f90 $(INCL) $(LIBP) $(LIBSHTOOLS) $(LIBPERF) $(LIBNETCDF) 
+
+SH_2_pnt: $(LIBOUT) SH_2_pnt.f90
+	$(FC) $(FFLAGS) -o $@ SH_2_pnt.f90 $(INCL) $(LIBP) $(LIBNETCDF) $(LIBSHTOOLS) $(LIBPERF)
+
+SHiso_2_colat: $(LIBOUT) SHiso_2_colat.f90
+	$(FC) $(FFLAGS) -o $@ SHiso_2_colat.f90 $(INCL) $(LIBP) $(LIBNETCDF) $(LIBSHTOOLS) $(LIBPERF)
+
+SH_axisload: $(LIBOUT) SH_axisload.f90
+	$(FC) $(FFLAGS) -o $@ SH_axisload.f90 $(INCL) $(LIBP) $(LIBNETCDF) $(LIBSHTOOLS) $(LIBPERF)
+
+SH_dump: $(LIBOUT) SH_dump.f90
+	$(FC) $(FFLAGS) -o $@ SH_dump.f90  $(INCL) $(LIBP) $(LIBPERF) $(LIBNETCDF) $(LIBSHTOOLS)
+
+SH_basinav: $(LIBOUT) SH_basinav.f90
+	$(FC) $(FFLAGS) -o $@ SH_basinav.f90  $(INCL) $(LIBP) $(LIBPERF)
+
+SH_filter:$(LIBOUT) SH_filter.f90
+	$(FC) $(FFLAGS) -o $@ SH_filter.f90 $(INCL) $(LIBP) $(LIBPERF)
+
+SH_sealevmat:$(LIBOUT) SH_sealevmat.f90
+	$(FC) $(FFLAGS) -o $@ SH_sealevmat.f90 $(INCL) $(LIBP) $(LIBPERF)
+
+SH_designmat:$(LIBOUT) SH_designmat.f90
+	$(FC) $(FFLAGS) -o $@ SH_designmat.f90 $(INCL) $(LIBP) $(LIBSHTOOLS) $(LIBPERF)
+
+SH_decormatSW:$(LIBOUT) SH_decormatSW.f90
+	$(FC) $(FFLAGS) -o $@ SH_decormatSW.f90 $(INCL) $(LIBP) $(LIBPERF)
+
+SH_prod2sum_mat:$(LIBOUT) SH_prod2sum_mat.f90
+	$(FC) $(FFLAGS) -o $@ SH_prod2sum_mat.f90  $(INCL) $(LIBP) $(LIBPERF) $(LIBSHTOOLS) 
+
+SH_prod2sum_mat_openmp:$(LIBOUT) SH_prod2sum_mat_openmp.f90
+	$(FC) $(FFLAGS) $(OMPFLAGS) -o $@ SH_prod2sum_mat_openmp.f90  $(INCL) $(LIBP) $(LIBPERF) $(LIBSHTOOLS) 
+
+SHSELEN_xtract: $(LIBOUT) SHSELEN_xtract.f90
+	$(FC) $(FFLAGS) -o $@ SHSELEN_xtract.f90  $(INCL) $(LIBP) $(LIBPERF)
+
+SH_diagreg: $(LIBOUT) SH_diagreg.f90
+	$(FC) $(FFLAGS) -o $@ SH_diagreg.f90  $(INCL) $(LIBP) $(LIBPERF)
+
+SH_degvar:$(LIBOUT) SH_degvar.f90
+	$(FC) $(FFLAGS) -o $@ SH_degvar.f90  $(INCL) $(LIBP) $(LIBPERF) 
+
+SH_gradMAT:$(LIBOUT) SH_gradMAT.f90
+	$(FC) $(FFLAGS) -o $@ SH_gradMAT.f90  $(INCL) $(LIBP)  $(LIBPERF) $(LIBSHTOOLS)
+
+SH_transmat:$(LIBOUT) SH_transmat.f90
+	$(FC) $(FFLAGS) -o $@ SH_transmat.f90  $(INCL) $(LIBP) $(LIBPERF) 
+
+SH_fit:$(LIBOUT) SH_fit.f90
+	$(FC) $(FFLAGS) $(OMPFLAGS) -o $@ SH_fit.f90  $(INCL) $(LIBP) $(LIBPERF_SINGLE) 
+
+SH_SLEQ:$(LIBOUT) SH_SLEQ.f90
+	$(FC) $(FFLAGS) $(OMPFLAGS) -o $@ SH_SLEQ.f90  $(INCL) $(LIBP) $(LIBPERF_SINGLE) $(LIBSHTOOLS) $(LIBNETCDF)
+
+
+##########library section
+
+shtlbx.mod:SHtlbx.f90
+	$(FC) -c  $(FFLAGS) $< $(INCL)
+
+sh_trpnt.mod: SH_trpnt_mem.f90
+	$(FC) -c $(FFLAGS) $(OMPFLAGS) $< $(INCL)
+
+sh_synthesis.mod: SH_synthesis.f90
+	$(FC) -c $(FFLAGS) $(OMPFLAGS) $< $(INCL)
+
+gia_func.mod:GIA_func.f90
+	$(FC) -c  $(FFLAGS) $< $(INCL)
+
+
+$(LIBOBJ):%.o:%.f90
+	$(FC) -c  $(FFLAGS) $< -o $@ $(INCL)
+
+
+clean:
+	rm -f *.o
+	rm -f *.mod
+	rm -f $(PROG)

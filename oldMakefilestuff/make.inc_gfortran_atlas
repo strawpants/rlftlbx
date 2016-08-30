@@ -1,0 +1,48 @@
+#System dependent parameters
+
+#gfortran version linked with ATLAS
+
+FC=gfortran
+CC=gcc
+
+#optimization flags -xT holds for intel core 2 duo processor
+FFLAGS= -mtune=core2 -O3
+CFLAGS= -mtune=core2 -O3
+
+#debug flags
+#FFLAGS= -g -O0 -fcheck=all
+# CFLAGS= -g -O0
+
+INCL=-I. -I$(ROOT_DIR)/include -I$(WORK_DIR)/include 
+LIBP=-L.  -L$(ROOT_DIR)/lib -L$(WORK_DIR)/lib 
+
+
+#BLAS lapack AND FFTW libs
+LIBPERF=-lRLFtlbx -lfftw3 -llapack -lptf77blas -lptcblas -latlas -lpthread
+
+#name of the output library
+LIBOUT=$(ROOT_DIR)/lib/libRLFtlbx.a
+
+INCGMT=-I${HOME}/this_gmt/include
+LIBGMT=-L${HOME}/this_gmt/lib -lgmt
+
+#SHTOOLS lib
+LIBSHTOOLS=-lSHTOOLS
+
+#netcdflib
+LIBNETCDF=-lnetcdf
+
+#LIBCC (math lib needed for grdfilter2)
+LIBCC=-lgfortran
+
+#Library archiver and indexer
+AR = ar
+ARFLAGS = -s -r
+
+OMPFLAGS=-fopenmp
+
+
+#install directory
+INSTALL=$(WORK_DIR)
+
+

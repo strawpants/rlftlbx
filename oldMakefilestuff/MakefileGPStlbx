@@ -1,0 +1,64 @@
+#Makefile for files in the GPStlbx
+ifeq ($(ROOT_DIR),)
+	export ROOT_DIR=../
+else
+
+endif
+
+#system specific input
+include ../make.inc
+
+#programs
+PROG=  SNX2BIN GPS_calendar GPS_designmat
+#library objects
+LIBOBJ = GPS_XYZ_geo_trans.o get_sinex.o GPS_rotmat.o get_sinexblock.o GPS_time.o write_sinex.o GPS_discont_cumu.o conv2itrf2000.o GPS_obseq.o
+#Modules
+MODFILE=gpstlbx.mod  sinextools.mod
+MODOBJ=GPStlbx.o SINEXtools.o
+
+####rules
+all:  mod libs prog
+
+mod: $(MODFILE)
+	cp $(MODFILE) ../include
+
+libs: $(LIBOBJ) $(CLIBOBJ)
+	$(AR) $(ARFLAGS) $(LIBOUT) $(MODOBJ) $(LIBOBJ)
+
+prog: $(PROG)
+
+install:
+	cp $(PROG) $(INSTALL)/bin
+
+
+
+
+#############program section
+
+SNX2BIN: $(LIBOUT) SNX2BIN.f90
+	$(FC) $(FFLAGS) -o $@ SNX2BIN.f90  $(INCL) $(LIBP) $(LIBPERF)
+
+GPS_calendar: $(LIBOUT) GPS_calendar.f90
+	$(FC) $(FFLAGS) -o $@ GPS_calendar.f90  $(INCL) $(LIBP) $(LIBPERF)
+
+GPS_designmat: $(LIBOUT) GPS_designmat.f90
+	$(FC) $(FFLAGS) -o $@ GPS_designmat.f90  $(INCL) $(LIBP) $(LIBPERF) $(LIBSHTOOLS) 
+
+
+##########library section
+
+
+gpstlbx.mod: GPStlbx.f90
+	$(FC) $(FFLAGS) $(INCL) -c  GPStlbx.f90
+
+sinextools.mod: SINEXtools.f90
+	$(FC) $(FFLAGS) $(INCL) -c SINEXtools.f90
+
+$(LIBOBJ):%.o:%.f90
+	$(FC) -c  $(FFLAGS) $< -o $@ $(INCL)
+
+
+clean:
+	rm -f *.o
+	rm -f *.mod
+	rm -f $(PROG)

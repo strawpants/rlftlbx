@@ -1,0 +1,107 @@
+#Makefile for files in the FORTtlbx
+
+ifeq ($(ROOT_DIR),)
+	export ROOT_DIR=../
+else
+
+endif
+
+include ../make.inc
+
+#programs
+PROG= BIN_swiss ascii_2_BIN BIN_buildnorm BIN_MAT_TIME GRACE2BIN BIN_MATH BIN_BDsplit BIN_BDmerge NORM_tool fit1D Groops2BIN
+
+
+#library objects
+MODFILE= forttlbx.mod binfiletools.mod bin_operations.mod groopsfile.mod eop_tools.mod autoregressive.mod
+MODOBJ=FORTtlbx.o BINfiletools.o BIN_operations.o GroopsFile.o EOP_tools.o AutoRegressive.o
+LIBOBJ=various.o GRACENORMtools.o NORM_fix_red.o BLAS_custom.o regexf.o Sort.o statistics.o interp1.o
+CLIBOBJ= STREAMFILE.o REGEX.o get_permvecC.o Sort_various.o
+
+#############general rules
+all: mod libs prog
+mod: $(MODFILE)
+	cp $(MODFILE) ../include		
+
+libs:$(LIBOBJ) $(CLIBOBJ) 
+	$(AR) $(ARFLAGS) $(LIBOUT) $(MODOBJ) $(LIBOBJ) $(CLIBOBJ)	
+
+
+prog: $(PROG)
+
+install:
+	cp $(PROG) $(INSTALL)/bin
+
+
+
+#############program section
+
+
+BIN_swiss: $(LIBOUT) BIN_swiss.f90
+	$(FC) $(FFLAGS) -o $@ BIN_swiss.f90 $(FFLAGS)  $(INCL) $(LIBP) $(LIBPERF)
+
+Groops2BIN: $(LIBOUT) Groops2BIN.f90
+	$(FC) $(FFLAGS) -o $@ Groops2BIN.f90 $(FFLAGS)  $(INCL) $(LIBP) $(LIBPERF)
+
+fit1D: $(LIBOUT) fit1D.f90
+	$(FC) $(FFLAGS) -o $@ fit1D.f90 $(FFLAGS)  $(INCL) $(LIBP) $(LIBPERF)
+
+
+BIN_MATH: $(LIBOUT) BIN_MATH.f90
+	$(FC) $(FFLAGS) -o $@ BIN_MATH.f90 $(FFLAGS)  $(INCL) $(LIBP) $(LIBPERF)
+
+GRACE2BIN: $(LIBOUT) GRACE2BIN.f90
+	$(FC) $(FFLAGS) -o $@ GRACE2BIN.f90 $(FFLAGS)  $(INCL) $(LIBP) $(LIBPERF)
+
+BIN_BDsplit: $(LIBOUT) BIN_BDsplit.f90
+	$(FC) $(FFLAGS) -o $@ BIN_BDsplit.f90 $(FFLAGS)  $(INCL) $(LIBP) $(LIBPERF)
+
+BIN_BDmerge: $(LIBOUT) BIN_BDmerge.f90
+	$(FC) $(FFLAGS) -o $@ BIN_BDmerge.f90 $(FFLAGS)  $(INCL) $(LIBP) $(LIBPERF)
+
+BIN_buildnorm: $(LIBOUT) BIN_buildnorm.f90
+	$(FC) $(FFLAGS) -o $@ BIN_buildnorm.f90 $(FFLAGS)  $(INCL) $(LIBP) $(LIBPERF)
+
+ascii_2_BIN: $(LIBOUT) ascii_2_BIN.f90
+	$(FC) $(FFLAGS) -o $@ ascii_2_BIN.f90 $(FFLAGS)  $(INCL) $(LIBP) $(LIBPERF)
+
+NORM_tool: $(LIBOUT) NORM_tool.f90
+	$(FC) $(FFLAGS) -o $@ NORM_tool.f90 $(INCL) $(LIBP) $(LIBPERF)
+
+BIN_MAT_TIME: $(LIBOUT) BIN_MAT_TIME.f90
+	$(FC) $(FFLAGS) -o $@ BIN_MAT_TIME.f90 $(FFLAGS)  $(INCL) $(LIBP) $(LIBPERF)
+
+
+##########library section
+
+# containing the modules (need to be made first)
+
+forttlbx.mod: FORTtlbx.f90
+	$(FC) -c  $(FFLAGS) $< $(INCL)
+
+binfiletools.mod: BINfiletools.f90
+	$(FC) -c -fPIC $(FFLAGS) $< $(INCL)
+
+bin_operations.mod: BIN_operations.f90
+	$(FC) -c  $(FFLAGS) $< $(INCL)
+
+groopsfile.mod: GroopsFile.f90
+	$(FC) -c  $(FFLAGS) $< $(INCL)
+
+eop_tools.mod: EOP_tools.f90
+	$(FC) -c  $(FFLAGS) $< $(INCL)
+
+
+autoregressive.mod: AutoRegressive.f90
+	$(FC) -c  $(FFLAGS) $< $(INCL)
+
+$(CLIBOBJ):%.o:%.c
+	$(CC) -c $(CFLAGS) $< -o $@
+
+$(LIBOBJ):%.o:%.f90
+	$(FC) -c  $(FFLAGS) $< -o $@ $(INCL)
+
+clean:
+	rm -f *.o
+	rm -f *.mod
+	rm -f $(PROG)

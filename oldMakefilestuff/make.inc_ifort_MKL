@@ -1,0 +1,47 @@
+#System dependent parameters
+
+#ifort version linked with MKL lib
+
+FC=ifort
+CC=icc
+
+#optimization flags -xT holds for intel core 2 duo processor
+FFLAGS= -O3 -xT -fPIC -heap-arrays 4
+CFLAGS= -O3 -xT -fPIC
+
+#debug flags
+# FFLAGS= -g -O0 -C -heap-arrays 4
+# CFLAGS= -g -O0 -C
+
+INCL=-I. -I$(ROOT_DIR)/include -I$(WORK_DIR)/include 
+LIBP=-L.  -L$(ROOT_DIR)/lib -L$(WORK_DIR)/lib -L/opt/intel/Compiler/11.1/072/mkl/lib/32/ -L/opt/intel/Compiler/11.1/072/lib/ia32
+
+#name of the output library
+LIBOUT=$(ROOT_DIR)/lib/libRLFtlbx.a
+
+INCGMT=-I${HOME}/this_gmt/include -I$(WORK_DIR)/include 
+LIBGMT=-L${HOME}/this_gmt/lib -L$(WORK_DIR)/lib -static -lgmt
+
+#SHTOOLS lib
+LIBSHTOOLS=-lSHTOOLS
+
+#netcdflib
+LIBNETCDF=-lnetcdf
+
+#BLAS lapack AND FFTW libs
+#LIBPERF=-lRLFtlbx -lmkl_lapack -lmkl -lguide -lpthread
+
+LIBPERF= -lRLFtlbx -lmkl_intel -lmkl_intel_thread -lmkl_core -liomp5 -lpthread
+
+#LIBCC (math lib needed for grdfilter2)
+LIBCC=-lgfortran
+
+#Library archiver and indexer
+AR = ar
+ARFLAGS = -s -r
+
+OMPFLAGS=-openmp
+
+
+#install directory
+INSTALL=$(WORK_DIR)

@@ -1,0 +1,49 @@
+#System dependent parameters
+
+#gfortran version linked with openblas
+
+FC=gfortran
+CC=gcc
+
+#optimization flags -xT holds for intel core 2 duo processor
+FFLAGS= -march=native -O3
+CFLAGS= -mtune=native -O3
+
+#debug flags
+FFLAGS= -g -O0 
+# CFLAGS= -g -O0
+
+INCL=-I. -I$(ROOT_DIR)/include -I$(WORK_DIR)/include 
+LIBP=-L.  -L$(ROOT_DIR)/lib -L$(WORK_DIR)/lib 
+
+
+#BLAS lapack AND FFTW libs
+LIBPERF=-lRLFtlbx /opt/numeric/openblas_install/lib/libopenblas.a -lfftw3 -lgomp -pthread
+LIBPERF_SINGLE=$(LIBPERF)
+
+#name of the output library
+LIBOUT=$(ROOT_DIR)/lib/libRLFtlbx.a
+
+INCGMT=-I${HOME}/this_gmt/include
+LIBGMT=-L${HOME}/this_gmt/lib -lgmt
+
+#SHTOOLS lib
+LIBSHTOOLS=-lSHTOOLS
+
+#netcdflib
+LIBNETCDF=/usr/lib64/libnetcdff.a -lnetcdf
+
+#LIBCC (math lib needed for grdfilter2)
+LIBCC=-lgfortran
+
+#Library archiver and indexer
+AR = ar
+ARFLAGS = -s -r
+
+OMPFLAGS=-fopenmp
+
+
+#install directory
+INSTALL=$(WORK_DIR)
+
+
