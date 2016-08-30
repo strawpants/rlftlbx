@@ -27,7 +27,6 @@ if( ${USE_OPENMP} )
 endif( ${USE_OPENMP} )
 
 
-
 #add make info
 set(CMAKE_VERBOSE_MAKEFILE on)
 
@@ -44,6 +43,7 @@ SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 
+set(CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/modules)
 
 #find prerequisites (BLAS & LAPACK)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
@@ -59,7 +59,7 @@ find_package(SHTOOLS REQUIRED )
 #find the fftw3 libarary
 find_package(FFTW3 REQUIRED )
 
-include_directories(${SHTOOLS_MODPATH} ${NETCDFF_MODPATH})
+include_directories("${SHTOOLS_MODPATH}" "${NETCDFF_MODPATH}")
 
 
 #where to copy public library header files
