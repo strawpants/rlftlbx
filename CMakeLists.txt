@@ -62,10 +62,6 @@ find_package(FFTW3 REQUIRED )
 include_directories("${SHTOOLS_MODPATH}" "${NETCDFF_MODPATH}")
 
 
-#where to copy public library header files
-#set(RLF_HEADER_DIRECTORY ${PROJECT_BINARY_DIR}/include)
-
-#set(Fortran_MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/modules)
 
 #add module sources
 LIST(APPEND F90MODULES FORTtlbx/AutoRegressive.f90 FORTtlbx/BINfiletools.f90 FORTtlbx/EOP_tools.f90 FORTtlbx/FORTtlbx.f90 FORTtlbx/GroopsFile.f90 FORTtlbx/BIN_operations.f90 )
@@ -92,10 +88,8 @@ add_library(${RLFLIB} STATIC $<TARGET_OBJECTS:mod> ${F90OBJS} ${COBJS} )
 install(TARGETS ${RLFLIB} DESTINATION lib)
 
 
-#target_include_directories(core PUBLIC ${GEO_LIB_SOURCE_DIR} ${Boost_INCLUDE_DIR})
-
 #add programs
-set(FORTPROG ascii_2_BIN BIN_BDmerge BIN_BDsplit BIN_buildnorm BIN_MATH BIN_swiss fit1D GRACE2BIN Groops2BIN NORM_tool)
+set(FORTPROG ascii_2_BIN BIN_BDmerge BIN_BDsplit BIN_buildnorm BIN_MATH BIN_MAT_TIME BIN_swiss fit1D GRACE2BIN Groops2BIN NORM_tool)
 foreach(prog  ${FORTPROG})
 add_executable(${prog} FORTtlbx/${prog}.f90)
 target_link_libraries(${prog} ${RLFLIB} ${OPTBLAS_LIBRARIES})
