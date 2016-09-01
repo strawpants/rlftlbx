@@ -1,4 +1,11 @@
-Fortran command line tools to do  geodetic stuff.
-Stuff todo: 
-*  add install rule for module files
-*  add install rule for commonly used data files (.e.g. Loadlvoe numbers etc)
+## Fortran command line tools to do  geodetic stuff.
+
+This software suite is my heritage from my PhD time. It is a set of classical  
+command line tools based upon a small library, which do relatively small tasks.  
+These are stitched together with for example bash scripts when more complex  
+problems are to be solved.  
+
+Although I still do a significant amount of work with these tools, I intend to  
+gradually replace it with Frommmle, a c++ library suite which can be scaled more  
+easily to parallel computation environments, and which is (hoperfully) better  
+maintainable.  
