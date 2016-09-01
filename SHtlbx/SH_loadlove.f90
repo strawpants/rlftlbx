@@ -66,9 +66,9 @@ if(present(lnm))then
 end if
 
 
-!get environment variable $WORK_DIR
-call getenv('WORK_DIR',dir)
-dir=trim(dir)//'/data/love/'
+!get environment variable $RLFTLBX_DATA
+call getenv('RLFTLBX_DATA',dir)
+dir=trim(dir)//'/love/'
 
 select case(typ)
 case(1)!Farrels (1972) load love numbers

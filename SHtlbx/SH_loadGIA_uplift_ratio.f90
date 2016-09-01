@@ -23,9 +23,9 @@ call SH_lm(size(rat,1),lmax,m)
 
 
 
-!get environment variable $WORK_DIR
-call getenv('WORK_DIR',dir)
-dir=trim(dir)//'/data/GIA/'
+!get environment variable $RLFTLBX_DATA
+call getenv('RLFTLBX_DATA',dir)
+dir=trim(dir)//'/love/'
 
 select case(typ)
 case(1)! Purcell et al 2011

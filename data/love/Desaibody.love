@@ -1,0 +1,8 @@
+# Body love numbers Desai 2002 article on the ocean pole tide:
+# Observing the pole tide with satellite altimetry
+# Shailen D. Desai
+#Citation: Desai, S. D., Observing the pole tide with satellite altimetry,
+# J. Geophys. Res., 107(C11), 3186, doi:10.1029/2001JC001224,2002.
+# Only degree 2 h2 and k2 love number is present !!
+# columns: n hn ln kn
+2 0.6027 INF 0.308

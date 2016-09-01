@@ -1,0 +1,7 @@
+# body love numbers from the PREM model
+# taken from lecture notes on tides E.J.O. Schrama
+# selected low degrees only
+# columns: n hn ln kn
+2 0.612 0.0855 0.303
+3 0.293 0.0152 0.0937
+4 0.179 0.0106 0.0423

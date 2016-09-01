@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 2.8.12)
 project(RLFtlbx)
 
+#be a nasty jerk when an in-source build is attempted
+if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
+   message(FATAL_ERROR "You're not making an out-of-source build. This is a bad idea" )
+endif(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
+
 #set some options
 option(USE_OPENMP "Build with OPENMP enabled" OFF)
 
@@ -27,6 +32,7 @@ if( ${USE_OPENMP} )
 endif( ${USE_OPENMP} )
 
 
+
 #add make info
 set(CMAKE_VERBOSE_MAKEFILE on)
 
@@ -43,7 +49,6 @@ SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 
-set(CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/modules)
 
 #find prerequisites (BLAS & LAPACK)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
@@ -59,9 +64,13 @@ find_package(SHTOOLS REQUIRED )
 #find the fftw3 libarary
 find_package(FFTW3 REQUIRED )
 
-include_directories("${SHTOOLS_MODPATH}" "${NETCDFF_MODPATH}")
+include_directories(${SHTOOLS_MODPATH} ${NETCDFF_MODPATH})
 
 
+#where to copy public library header files
+#set(RLF_HEADER_DIRECTORY ${PROJECT_BINARY_DIR}/include)
+
+#set(Fortran_MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/modules)
 
 #add module sources
 LIST(APPEND F90MODULES FORTtlbx/AutoRegressive.f90 FORTtlbx/BINfiletools.f90 FORTtlbx/EOP_tools.f90 FORTtlbx/FORTtlbx.f90 FORTtlbx/GroopsFile.f90 FORTtlbx/BIN_operations.f90 )
@@ -88,8 +97,10 @@ add_library(${RLFLIB} STATIC $<TARGET_OBJECTS:mod> ${F90OBJS} ${COBJS} )
 install(TARGETS ${RLFLIB} DESTINATION lib)
 
 
+#target_include_directories(core PUBLIC ${GEO_LIB_SOURCE_DIR} ${Boost_INCLUDE_DIR})
+
 #add programs
-set(FORTPROG ascii_2_BIN BIN_BDmerge BIN_BDsplit BIN_buildnorm BIN_MATH BIN_MAT_TIME BIN_swiss fit1D GRACE2BIN Groops2BIN NORM_tool)
+set(FORTPROG ascii_2_BIN BIN_BDmerge BIN_BDsplit BIN_buildnorm BIN_MATH BIN_swiss fit1D GRACE2BIN Groops2BIN NORM_tool)
 foreach(prog  ${FORTPROG})
 add_executable(${prog} FORTtlbx/${prog}.f90)
 target_link_libraries(${prog} ${RLFLIB} ${OPTBLAS_LIBRARIES})
@@ -118,5 +129,12 @@ add_executable(${prog} GRDtlbx/${prog}.f90)
 target_link_libraries(${prog} ${RLFLIB} ${OPTBLAS_LIBRARIES} ${NETCDFF_LIBRARY} ${SHTOOLS_LIBRARY})
 install(TARGETS ${prog} DESTINATION bin)
 endforeach(prog in ${GRDPROG})
+
+## Also make sure to install data files (load love nubers EOP parameters etc)
+install(DIRECTORY data/ DESTINATION share/rlftlbx)
+
+#also add a message to tell the user to set the RLFTBX_DATA environment variable
+install(CODE "MESSAGE(\"\nUSAGE NOTE:\nTo find some commonly used data, set the environment variable RLFTLBX_DATA to:\n ${CMAKE_INSTALL_PREFIX}/share/rlftlbx\n E.g. in your .bashrc:\n export RLFTLBX_DATA=${CMAKE_INSTALL_PREFIX}/share/rlftlbx\n \")")
+
 
 

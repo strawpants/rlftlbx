@@ -16,7 +16,7 @@
 !! added correct behavior when search area contains the meridian
 !!Updated by Roelof Rietbroek, Fri Oct  5 15:28:38 2012
 !! fixed bug in time restricted search
-
+!! Updated 1 Sept 2016. Hinted changed to use a PSMSL_DIR environment variable
 
 
 program PSMSL_READ
@@ -69,8 +69,8 @@ g_restr=.false.
 contains_greenwhich=.false.
 
 !get default PSMSL root
-call getenv('WORK_DIR',dum)
-rootdir=trim(dum)//'/data/PSMSL_new/'
+call getenv('PSMSL_DIR',dum)
+rootdir=trim(dum)!!//'/data/PSMSL_new/'
 
 
 !default filelist metric monthly data
@@ -491,6 +491,8 @@ write(unit,frmt)"DATABASE is the PSMSL root directory. specify either the full d
 write(unit,frmt)"the shortcuts RLR:"//trim(dir)//'rlr_monthly (Revised Local Reference)'
 write(unit,frmt)"              RLA:"//trim(dir)//'rlr_annual  (Revised Local Reference, yearly)'
 write(unit,frmt)"              MET:"//trim(dir)//'met_monthly (metric dataset)'
+write(unit,frmt)"              Note: For these shortcuts to work the environment variable"
+write(unit,frmt)"              PSMSL_DIR must point to the root of the psmsl directory."
 write(unit,frmt)"OPTIONS may be:" 
 write(unit,frmt)"-i[+]: print brief station name and location" 
 write(unit,frmt)"  Append the + sign to get more detailed info on stations"

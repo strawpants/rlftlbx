@@ -1,0 +1,17 @@
+#!/bin/bash
+# ----------------
+# Author: R. Rietbroek
+#adapted 6 June 2013 use ftp adresses since the old http adresses do not work anymore
+dir=EOPC04
+mkdir -p $dir
+cd $dir
+wget -N ftp://hpiers.obspm.fr/iers/eop/eopc04/eopc04_IAU2000.62-now
+#wget -N http://data.iers.org/products/214/14443/orig/eopc04_08_IAU2000.62-now 
+
+cd ..
+
+dir=EOPC01
+mkdir -p $dir
+wget -N ftp://hpiers.obspm.fr/iers/eop/eopc01/eopc01.iau2000.1846-now
+#wget -N http://data.iers.org/products/186/11759/orig/eopc01.iau2000.1846-now
+cd ..
