@@ -38,9 +38,9 @@ subroutine read_EOP()
   EOP%dat=0.d0
   EOP%time=0.d0
 
-  ! get the environment variable WORK_DIR
-  call getenv('WORK_DIR',dir)
-  dir=trim(dir)//'/data/EOP/'
+  ! get the environment variable RLFTLBX_DATA
+  call getenv('RLFTLBX_DATA',dir)
+  dir=trim(dir)//'/EOP/'
 
   !open for reading
   open(unit=un,file=trim(dir)//trim(EOP%file),status='old')

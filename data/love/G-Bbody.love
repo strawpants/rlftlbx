@@ -1,0 +1,7 @@
+# body love numbers from the Gutenberg-Bullen earth model
+# taken from farrel 1972
+# selected low degrees only
+# columns: n hn ln kn
+2 0.6114 0.0832 0.3040
+3 0.2891 0.0145 0.0942
+4 0.1749 0.0103 0.0429

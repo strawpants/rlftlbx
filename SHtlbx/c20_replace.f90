@@ -23,9 +23,9 @@ un=13
 stderr=0
 c20_replace=0.d0
 
-!get environment variable $WORK_DIR and adapt to the right path
-call getenv('WORK_DIR',dir)
-dir=trim(dir)//'/data/C20_replace/'
+!get environment variable $RLFTLBX_DATA and adapt to the right path
+call getenv('RLFTLBX_DATA',dir)
+dir=trim(dir)//'/C20_replace/'
 
 !load data from file
 select case(type)
@@ -40,7 +40,7 @@ inquire(FILE=trim(file),EXIST=fex)
 if(.not. fex)then
    write(stderr,*)"ERROR in:c20_replace.f90, file does not exist:"
    write(stderr,*)trim(file)
-   write(stderr,*)" did you set the WORK_DIR environment variable?"
+   write(stderr,*)" did you set the RLFTLBX_DATA environment variable?"
    stop
 end if
 

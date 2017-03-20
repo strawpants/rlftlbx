@@ -53,7 +53,7 @@
 !!Updated by Roelof Rietbroek, Tue Aug 18 17:32:32 2015
 !!added option to keep solution vector from the first iteration while modifying the error with an AR model
 
-
+!!Updated by Roelof Rietbroek, Fri Oct 14 2016
 program fit1D
 use forttlbx
 use autoregressive
@@ -268,6 +268,7 @@ do,i=1,narg
             read(dum(6:),*)Ar%ord
          end if
          arErroronly=.true.
+         colouterr=.true.
       case('h') ! ask for help
 
          call help(version)
@@ -815,7 +816,7 @@ write(unit,frmt)"    required)."
 write(unit,frmt)"-ar[=n]: Estimate an Autoregressive model of order n  (default=1), for the residuals, and use"
 write(unit,frmt)"         this as an empirical error-covariance"
 write(unit,frmt)"         Note: this will replace the -w option in the second run"
-write(unit,frmt)"-ear[=n]: only use the AR model to correct the error estimate, but don't reestimate the fit "
+write(unit,frmt)"-are[=n]: only use the AR model to correct the error estimate, but don't reestimate the fit "
 write(unit,frmt)"-t: print out pvalues (in third column of estimated parameters) based on the "
 write(unit,frmt)"     appropriate student-t distribution."
 write(unit,frmt)"    the p-values represent the probability to obtain a test statistic that is more extreme"

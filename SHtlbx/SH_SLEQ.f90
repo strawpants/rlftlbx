@@ -50,8 +50,8 @@ FR='CM' ! center of common mass frame
 lmax=0
 rotfeedback=.false.
 verbose=.false.
-call getenv('WORK_DIR',dir)
-topo%file=trim(dir)//'/data/etopo1/etopo1_0125deg.nc'
+call getenv('RLFTLBX_DATA',dir)
+topo%file=trim(dir)//'/etopo1/etopo1_0125deg.nc'
 dt=1
 load%mtyp='F'
 love%mtyp='F'
