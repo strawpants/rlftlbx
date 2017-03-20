@@ -13,6 +13,8 @@
 
 !!Updated by Roelof Rietbroek, Wed Oct 24 11:51:28 2007
 !!covariance matrix is now stored in packed form (half the size) and can be retrieved in packed format
+!!Updated by Roelof Rietbroek, Tue March 21 2017
+!! addedd space in between stop statement to comply with new fortran compiler
 
 
 
@@ -400,7 +402,7 @@ if(present(xlist))then
       write(stderr,*) 'vector xlist has dimension ',size(xlist,1),' required ',n1
       stop
    else
-      if(len(xlist(1))<80)stop'xlist characters width must be at least 80'
+      if(len(xlist(1))<80)stop 'xlist characters width must be at least 80'
 
       xlist(1:n1)=list(ivec1(1:n1))
    end if
