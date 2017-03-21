@@ -74,6 +74,8 @@ character(len(in(1))),pointer::tmp(:)
 integer*8::n
 
 n=0
+!!IMPORTANT NOTE the use of associated() requires the pointer to be correctly initiated (allocated or nullified)
+!! failing to do so may cause segfaults when the build contains optimization flags
 if(associated(in))then
    n=size(in)
    !let tmp point to the same memory as in
