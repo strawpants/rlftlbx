@@ -22,7 +22,7 @@ endif (NOT CMAKE_BUILD_TYPE)
 
 #basic compiler flags
 set(CMAKE_Fortran_FLAGS_RELEASE "-march=native -O3")
-set(CMAKE_Fortran_FLAGS_DEBUG "-g") 
+set(CMAKE_Fortran_FLAGS_DEBUG "-march=native -O3 -g") 
 
 ##add some flags and libraries when using openmp
 if( ${USE_OPENMP} )

@@ -25,6 +25,8 @@
 !!Updated by Roelof Rietbroek, Mon Jan 13 10:02:26 2014
 !! also allow an input file with multiple lon,lat points
 
+!!updated By Roelof Rietbroek, Tuesday 21 March 2017, NUllified variable infiles to prevent segfault in various.f90 
+
 
  
 program SH_2_pnt
@@ -77,7 +79,7 @@ lonlatfile=''
 npoints=0
 chunk=3000
 d2r=pi/180.d0
-
+nullify(infiles)
 !!!!!!!!!!!!! process command line arguments
 
 !get number of command line arguments
@@ -457,7 +459,7 @@ write(stderr,frmt)'       1:GRACE(GFZ,JPL,CSR) type'
 write(stderr,frmt)'       2:GINS type (French GRGS solution)'
 write(stderr,frmt)'       3:ICGEM type'
 write(stderr,frmt)'       4:(default) short type first line contains the degree supported, start, center end end time'
-write(*,frmt)'              of observation'
+write(stderr,frmt)'              of observation'
 write(stderr,frmt)'         the other lines are SH coefficients'
 write(stderr,frmt)'       0:clean no header only SH coefficients'
 write(stderr,frmt)'when no input files are provided the program reads the coefficient from standard input (in the format 4)'

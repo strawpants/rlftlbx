@@ -1,6 +1,9 @@
 !subroutine to store a specific sinex block into memory and perform search restrictions on it
 !on first call the block is saved in a character array
 !thecomplet block is saved but the output can be resticted to search(or exclude) for strings in the block lines
+!!Updated by Roelof Rietbroek, Tue March 21 2017
+!! addedd space in between stop statement to comply with new fortran compiler
+
 subroutine get_sinexblock(file,blockname,nlines,list,inc1,excl1)
 use GPStlbx,only:compstr
 implicit none
@@ -152,7 +155,7 @@ if(present(list))then
       write(stderr,*) 'vector list has dimension ',size(list,1),' required ',n1
       stop
    else
-      if(len(list(1))<80)stop'list characters width must be at least 80'
+      if(len(list(1))<80)stop 'list characters width must be at least 80'
     !  write(*,*)sblock(ivec1(1:n1))
       list(1:n1)=sblock(ivec1(1:n1))
    end if
