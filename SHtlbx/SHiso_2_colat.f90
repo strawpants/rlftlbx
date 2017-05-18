@@ -16,7 +16,7 @@
 !! added geoid greensfunction
 !!Updated by Roelof Rietbroek, Mon Dec  8 16:42:06 2014
 !!fixed bug in dfault output domain (outputted to 0,pi degrees instread of 0 180 degrees) 
-
+!! Updated 18 April 2017 fixd bug (rho_w should have bveen rho_e)
 
 program SHiso_2_colat
 use shtools
@@ -210,7 +210,7 @@ case('GRN_U') ! needs to read in load love numbers
 
    if(asymp)loadinfty=loadnm(lmax+1) !set 'asymptotic' load love number 
 
-   fact=3.d0/(4*pi*rho_w*(RE**2)) ! = a/me
+   fact=3.d0/(4*pi*rho_e*(RE**2)) ! = a/me
    do, l=lmin,lmax
       Cl(l+1)=fact*(loadnm(l+1)-loadinfty)
    end do
@@ -236,7 +236,7 @@ case('GRN_N') ! needs to read in load love numbers
       lmin=max(lmin,1) !possibly reset lmin ( may not be zero)
    end if
 
-   fact=3.d0/(4*pi*rho_w*(RE**2)) ! = a/me
+   fact=3.d0/(4*pi*rho_e*(RE**2)) ! = a/me
    do, l=lmin,lmax
 
       
@@ -264,7 +264,7 @@ case('GRN_V')
 
    if(asymp)loadinfty=lmax*loadnm(lmax+1) !set 'asymptotic' load love number 
 
-   fact=3.d0/(4*pi*rho_w*(RE**2)) ! = a/me
+   fact=3.d0/(4*pi*rho_e*(RE**2)) ! = a/me
    do, l=max(lmin,1),lmax
       Cl(l+1)=fact*(dble(l)*loadnm(l+1)-loadinfty)/dble(l)
    end do
