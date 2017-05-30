@@ -27,8 +27,16 @@ set(CMAKE_Fortran_FLAGS_DEBUG "-march=native -O3 -g")
 ##add some flags and libraries when using openmp
 if( ${USE_OPENMP} )
     find_package(OpenMP REQUIRED)
-    set(CMAKE_Fortran_FLAGS_RELEASE "${CMAKE_Fortran_FLAGS_RELEASE} ${OpenMP_Fortran_FLAGS}" )
-    set(CMAKE_Fortran_FLAGS_DEBUG "${CMAKE_Fortran_FLAGS_DEBUG} ${OpenMP_Fortran_FLAGS}" )
+    if( ${OpenMP_Fortran_FLAGS})
+    	set(CMAKE_Fortran_FLAGS_RELEASE "${CMAKE_Fortran_FLAGS_RELEASE} ${OpenMP_Fortran_FLAGS}" )
+    	set(CMAKE_Fortran_FLAGS_DEBUG "${CMAKE_Fortran_FLAGS_DEBUG} ${OpenMP_Fortran_FLAGS}" )
+    else( ${OpenMP_Fortran_FLAGS})
+	#try the C flags instead (for compatibility reasonsn
+    	set(CMAKE_Fortran_FLAGS_RELEASE "${CMAKE_Fortran_FLAGS_RELEASE} ${OpenMP_C_FLAGS}" )
+    	set(CMAKE_Fortran_FLAGS_DEBUG "${CMAKE_Fortran_FLAGS_DEBUG} ${OpenMP_C_FLAGS}" )
+ 
+
+    endif(${OpenMP_Fortran_FLAGS})
 endif( ${USE_OPENMP} )
 
 
