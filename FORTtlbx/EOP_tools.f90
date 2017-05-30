@@ -19,7 +19,7 @@ type EOPdat
 end type EOPdat
 
 !contains all the goodies:
-type(EOPdat)::EOP
+type(EOPdat),save::EOP
 
 contains
 
