@@ -12,7 +12,7 @@ cp $fout ${fout}.bk
 
 #get new file online
 ftplink=ftp://podaac.jpl.nasa.gov/allData/grace/docs/TN-07_C20_SLR.txt
-wget $ftplink
+wget -N $ftplink
 
 
 fin=`basename $ftplink`

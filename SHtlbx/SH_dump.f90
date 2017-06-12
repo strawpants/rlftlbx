@@ -101,7 +101,8 @@
 !! added option to keep or sibtract the iers 2010 mean pole when computing the 
 ! effect of the Earth rotation
 
-
+!! Update by Roelof Rietbroek, Mon 12 Juni 2017, provide a shortcut to use
+!! degree 1 coefficient correction from Swenson and Wahr 2008 
 
 
 program SH_dump
@@ -412,6 +413,13 @@ do,i=1,narg
                geocfile=dum(4:)
             end if
          end if
+
+        if(cmod .eq. 8)then
+            call getenv('RLFTLBX_DATA',geocfile)
+            geocfile=trim(geocfile)//'/C1X_replace/SwensonCM-CF.txt'
+            cmod=7 !!option behave like cmod=7 after this
+        end if
+
       case('t')!Specify output type of spherical harmonic set (standard GRACE,ICGEM,GINS,stripped)
          select case(dum(3:3))
          case('o')
@@ -1315,6 +1323,7 @@ write(stderr,frmt)'        6: Rietbroek et al 2011 from combined FESOM+GPS+GRACE
 write(stderr,frmt)'        7 CUSTOMGEOCENTERFILE : Apply a geocenter model from a custom file.'
 write(stderr,frmt)'          columns must be in chronological order and consist of time (years), x(m), y(m) z(m).'
 write(stderr,frmt)'          Values will be averaged over the period' 
+write(stderr,frmt)'        8: Degree 1 corrections according to Swenson and Wahr 2008' 
 write(stderr,frmt)'        note that the time must be extractable from the input files (GRACE,ICGEM,GINS or default output format)'
 write(stderr,frmt)"        Use the large 'G' to also compute the effect of the Earth's flattening in the shifted reference frame "
 write(stderr,frmt)"        This effects only the coefficients C30, C31 and S31"

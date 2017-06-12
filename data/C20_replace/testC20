@@ -1,6 +1,0 @@
-#!/bin/bash
-
-for f in ~/work/data/GRAV/GFZ/RL04_orig/monthlyL2/GSM*gz
-do
-gunzip -c $f | SH_dump -j1 -l2 | awk '/META/{t=$4}/2    0/{print t,$3}'
-done
