@@ -29,7 +29,7 @@ git@gitlab.igg.uni-bonn.de:roelof/rlftlbx.git
 ```
 mkdir rlftlbx_build;cd rlftblx_build
 
-cmake -DCMAKE_PREFIX_PATH="/
+cmake -DCMAKE_PREFIX_PATH="ADDITIONALLIBPATH1;PATH2" -DCMAKE_INSTALL_PREFIX="INSTALLPATH" PATHTORLFTLBXROOT
 
 ```
 
