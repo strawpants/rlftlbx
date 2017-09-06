@@ -104,6 +104,15 @@ void cread_( int *unit,int *bytes, void *output){
 
 }
 
+void creadmany_( int *unit, size_t *bytes, void *output){
+    //fprintf(stderr,"Bytes requested %ld\n",*bytes);
+  if(fread(output,1,*bytes,filelist[*unit-1]) != *bytes){
+    fprintf(stderr,"ERROR in cread: incomplete read\n");
+    exit(1);
+  }
+
+}
+
 //Function to skip forward in a file. Will return an error if the file is not seekable
 void cskip_(int *unit,int *bytes){
   if(fseek(filelist[*unit-1],*bytes,SEEK_CUR) != 0){
