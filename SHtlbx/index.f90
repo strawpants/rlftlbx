@@ -38,6 +38,33 @@ SH_opos=m*(lmax+1)-(m*(m-1))/2+1+l-m
 
 end function SH_opos
 
+!!function which provides the DegreeWise sorting scheme for groopsdata
+function SHgDWpos(l,m,q,lmax,lmin)
+integer*8 SHgDWpos
+integer,intent(in)::l,m,q,lmax,lmin
+
+
+SHgDWpos=0;
+
+do,il=lmin,lmax
+    do,im=0,il
+        do,iq=0,1
+            if(im==0 .and. iq ==1)then
+                cycle
+            end if
+            SHgDWpos=SHgDWpos+1
+            if(il==l .and. im==m .and. iq==q)then
+                return
+            end if
+        end do     
+    end do
+end do
+
+
+
+end function SHgDWpos    
+
+
 !!function which gives position parameter as a function of degree and order
 !!this index is used in programs from Juergen Kusche
 function SH_tpos(l,m,q,lmax,lmin)

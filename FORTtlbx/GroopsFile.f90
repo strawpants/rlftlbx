@@ -10,6 +10,7 @@
 module GroopsFile
 use forttlbx
 use binfiletools
+use shtlbx,only:SHgDWpos
 implicit none
 integer,parameter::stderr=0
 
@@ -79,6 +80,7 @@ end if
 Ginfo%file=trim(fbase)//'.info.xml'//char(0)
 call read_Groopsxml(Ginfo)
 
+!write(stderr,*)Grhs%nrow,Gnorm%nrow
 !!set up and gather stuff for the  normal matrix
 dat%pack1=>Gnorm%pack1
 
@@ -86,7 +88,7 @@ dat%nvec=2
 allocate(dat%vec(Grhs%nrow,dat%nvec))
 
 dat%vec=0
-dat%vec(:,2)=Grhs%pack1(:)
+dat%vec(:,1)=Grhs%pack1(:)
 dat%descr="Converted Groopsnormal system"
 
 dat%nint=2
@@ -126,14 +128,6 @@ dat%nval2=dat%nval1
 dat%pval1=Gnorm%npack
 dat%pval2=1
 
-!guess side description
-allocate(dat%side1_d(dat%nval1))
-dat%side1_d=''
-!try guessing the maximum and minimum degree
-
-!!write(0,*)getXMLint(Ginfo,'observationCount')
-
-!!write(0,*)Grhs%nrow,Grhs%ncol
 
 
 end subroutine read_GROOPSNEQ
@@ -201,7 +195,6 @@ Gfile%cunit=opencstream(0,Gfile%file)
 
 !read the first bytes ( should start with a 'B')
 call cread(Gfile%cunit,1,Gfile%ftype)
-write(stderr,'(A1)')Gfile%ftype
 if(Gfile%ftype .ne. 'B')then
    write(stderr,*)"ERROR: not a groops binary file",trim(Gfile%file)
    stop(1)
@@ -258,7 +251,7 @@ case(1,2) !SYMMETRIC or TRIANGULAR
 end select
 
 if(.not. associated(gfile%pack1))allocate(gfile%pack1(gfile%npack))
-call creadmany(gfile%cunit,Gfile%npack*kinddbl,gfile%pack1(1))
+call cread(gfile%cunit,Gfile%npack*kinddbl,gfile%pack1(1))
 !write(0,*)gfile%version,gfile%type,gfile%mtype,gfile%nrow,gfile%ncol
 
 
@@ -272,6 +265,8 @@ subroutine read_groopsXML(GF)
     type(GroopsXML)::GF
     integer:: stat=0
     integer:: nline=0
+    
+    allocate(GF%buffer(4))
 
     open(unit=GF%unit,file=GF%file,form='formatted',status='old')
     
@@ -331,6 +326,33 @@ function getXMLdbl(GF,search)
 
 
 end function getXMLdbl
+
+subroutine getDegreeWise_desc(descr,lmax,lmin)
+    integer,intent(in)::lmax,lmin
+    character(24),intent(inout),pointer::descr(:)
+
+    integer::nsh,indx,l,m
+    nsh=SHgDWpos(lmax,lmax,1,lmax,lmin)
+
+    if(.not. associated(descr))then
+        allocate(descr(nsh))
+    end if
+
+    indx=0
+    do,l=lmin,lmax
+        do,m=0,l
+               indx=indx+1
+               write(descr(indx),'(a3,1x,i3,i3)')'GCN',l,m
+               if(m .ne. 0)then
+                   indx=indx+1
+                    write(descr(indx),'(a3,1x,i3,i3)')'GSN',l,m
+               end if 
+        end do
+    end do
+
+end subroutine getDegreeWise_desc
+
+
 
 end module GroopsFile
 

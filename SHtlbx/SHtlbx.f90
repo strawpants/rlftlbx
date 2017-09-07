@@ -87,6 +87,12 @@ interface
      integer::SH_opos
    end function SH_opos
    
+
+    function SHgDWpos(l,m,q,lmax,lmin)
+        integer*8 SHgDWpos
+        integer,intent(in)::l,m,q,lmax,lmin
+    end function 
+
    function SH_tpos(l,m,q,lmax,lmin)
      implicit none
      integer,intent(in)::l,m,lmax,lmin,q
