@@ -75,7 +75,7 @@ Grhs%file=trim(fbase)//'.rightHandSide.dat'//char(0)
 call read_GROOPSBIN(Grhs)
 if(Grhs%ncol .ne. 1)then
     write(stderr,*)"ERROR: cannot not handle systems with multiple right hand sides"
-    stop(1)
+    stop  
 end if
 Ginfo%file=trim(fbase)//'.info.xml'//char(0)
 call read_Groopsxml(Ginfo)
@@ -163,7 +163,7 @@ ssize=readUint(cunit)
 
 if (ssize > len(string))then
 write(0,*)"ERROR:GroopsFile.f90 cannot read string (too few chareacters reserved)"
-stop(1)
+stop 
 end if
 string=''
 call cread(cunit,ssize,string)
@@ -197,7 +197,7 @@ Gfile%cunit=opencstream(0,Gfile%file)
 call cread(Gfile%cunit,1,Gfile%ftype)
 if(Gfile%ftype .ne. 'B')then
    write(stderr,*)"ERROR: not a groops binary file",trim(Gfile%file)
-   stop(1)
+   stop  
 end if
 
 !read i version and type strings 
@@ -207,7 +207,7 @@ call readString(Gfile%cunit,Gfile%version)
 
 if(Gfile%version(1:3) .ne. '1.1')then
     write(stderr,*)"ERROR no support for version 1.1"
-    stop(1)
+    stop  
 end if
 
 !read remainder up to 64 bits

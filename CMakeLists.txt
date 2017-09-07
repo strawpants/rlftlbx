@@ -90,11 +90,15 @@ link_directories(${OPTBLAS_LIBPATH})
 #set(Fortran_MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/modules)
 
 #add module sources
-LIST(APPEND F90MODULES FORTtlbx/AutoRegressive.f90 FORTtlbx/BINfiletools.f90 FORTtlbx/EOP_tools.f90 FORTtlbx/FORTtlbx.f90 FORTtlbx/GroopsFile.f90 FORTtlbx/BIN_operations.f90 )
+
+LIST(APPEND F90TOPMODULES FORTtlbx/FORTtlbx.f90)
+LIST(APPEND F90MODULES FORTtlbx/AutoRegressive.f90 FORTtlbx/BINfiletools.f90 FORTtlbx/EOP_tools.f90  FORTtlbx/GroopsFile.f90 FORTtlbx/BIN_operations.f90 )
 LIST(APPEND F90MODULES GPStlbx/GPStlbx.f90 GPStlbx/SINEXtools.f90 )
 LIST(APPEND F90MODULES GRDtlbx/grdtlbx.f90 GRDtlbx/PSMSL_TOOL.f90 )
 LIST(APPEND F90MODULES SHtlbx/SHtlbx.f90 SHtlbx/SH_trpnt_mem.f90 SHtlbx/SH_synthesis.f90 SHtlbx/GIA_func.f90 )
-add_library(mod OBJECT ${F90MODULES} ${COREHEADERS})
+add_library(modtop OBJECT ${F90TOPMODULES} )
+add_library(mod OBJECT ${F90MODULES} )
+add_dependencies(mod modtop)
 #install modules files as well
 install(DIRECTORY ${CMAKE_Fortran_MODULE_DIRECTORY}/ DESTINATION include)
 
@@ -112,7 +116,7 @@ LIST (APPEND F90OBJS GRDtlbx/NC_write.f90 GRDtlbx/OBP_obseq.f90)
 LIST(APPEND COBJS FORTtlbx/get_permvecC.c  FORTtlbx/REGEX.c  FORTtlbx/Sort_various.c  FORTtlbx/STREAMFILE.c )
 
 
-add_library(${RLFLIB} STATIC $<TARGET_OBJECTS:mod> ${F90OBJS} ${COBJS} )
+add_library(${RLFLIB} STATIC $<TARGET_OBJECTS:modtop> $<TARGET_OBJECTS:mod> ${F90OBJS} ${COBJS} )
 install(TARGETS ${RLFLIB} DESTINATION lib)
 
 
