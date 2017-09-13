@@ -10,7 +10,8 @@
 
 !!Updated by Roelof Rietbroek, Wed Jun 29 11:00:45 2011
 !!fixed bug in Nunknowns nametag
-
+!! Updated 13 sept 2017
+!! also allow automatic replacement of G[CS]NV tags with G[CS]N+space
 
 program GRACE2BIN
 use binfiletools
@@ -25,7 +26,7 @@ double precision::ltpl,Stime,Etime,Ctime
 
 integer::npara,nobs,npar_red,nhist
 type(BINdat)::normout
-logical::ignoapri
+logical::ignoapri,vnreplace
 integer::iargc
 !defaults initializations
 itharg=0
@@ -33,6 +34,7 @@ lmax=0
 lmin=9999
 normout%file='stdout'
 ignoapri=.false.
+vnreplace=.false.
 basename=''
 
 !!!!!!!!!!!!!command line arguments processing!!!!!!!!!!!!!!!!!!!!!!!!!!1
@@ -50,7 +52,9 @@ do,i=1,narg
       select case(dum(2:2))
          case('n')! ignore apriori values ( set  to zero)
             ignoapri=.true.
-      case default
+        case('r')!replace input which has VN in it with V+space
+        vnreplace=.true.
+        case default
          call help()
       end select
 
@@ -147,7 +151,15 @@ do,j=1,npara
 end do
 
 
-
+if(vnreplace)then
+    do,i=1,normout%nval1
+        ind=index(normout%side1_d(i),'NV')
+        if(ind .eq. 3)then
+            normout%side1_d(i)(3:4)='N '
+        end if
+    end do    
+    
+end if
 
 !put in the meta data
 normout%ints(1)=nobs
@@ -200,5 +212,6 @@ write(*,frmt)' Usage: GRACE2BIN [OPTIONS] GRACEFILE'
 write(*,frmt)' Where GRACEFILE denotes the header file (ends with .h) of the normal system'
 write(*,frmt)' OPTIONS may be:'
 write(*,frmt)' -n: Ignore apriori values (set to zero)'
+write(*,frmt)' -r: Replace the V in the side description with a space for G[CS]NV'
 stop
 end subroutine help
