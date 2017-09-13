@@ -72,7 +72,7 @@ do,i=1,narg
         fout=trim(dum(4:))
      !case('s2')!description of side2 (not needed when -n is selected)
         !write(stderr,*)"ERROR:not implemented yet"
-        !stop(1)
+        !stop 
      !case('n')
          !normal=.true.
     ! case('M')!append meta data
@@ -99,7 +99,7 @@ select case(s1scheme)
 case(1)
     if(lmax<0)then
          write(stderr,*)'ERROR: missing -l option: lmax,lmin must be set'
-         stop(1)
+         stop 
     end if
     call getDegreeWise_desc(dat%side1_d,lmax,lmin)
 
@@ -116,7 +116,7 @@ case(1)
 
 case default
          write(stderr,*)'ERROR: -s1 option is not understood'
-         stop(1)
+         stop 
 end select
 
 
@@ -124,7 +124,7 @@ end select
 !check whether side description has the expected amount of entries
 if(size(dat%side1_d) .ne. dat%nval1)then
          write(stderr,*)'ERROR: provided side description is inconsistent in number'
-         stop(1)
+         stop 
 end if
 
 
