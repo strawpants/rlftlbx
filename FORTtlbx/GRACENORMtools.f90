@@ -15,7 +15,8 @@
 
 !!Updated by Roelof Rietbroek, Wed Feb 15 17:17:33 2012
 !! added better time retrieval
-
+!! updated by Roelof Rietbroek wed 13 Sept 2017
+!! only update time when valid date was read in
 
 !!subroutine read_GRACEnorm reads in GRACE normal file header part
 subroutine read_GRACEnormhead(filename,npar,npar_red,nobs,side_d,ltpl,apriori,Etime,Stime,hist,nhist)
@@ -71,27 +72,28 @@ do while( .not. nd)
          end if
 
          read(dum,'(33x,i2,i2,i2,1x,i2,i2,i2)')yyst,mmst,ddst,yynd,mmnd,ddnd
-         
-         !retrieve time info
-         !start time
-         if(yyst >50)then
-            jd=date_2_jd(ddst,mmst,yyst+1900,0,0,0)
-         else
-            jd=date_2_jd(ddst,mmst,yyst+2000,0,0,0)
-         end if
+         !only update time if we have read a valid date from the STATIS line   
+         if( (mmst*ddst*mmnd*ddnd) > 0 )then
+            !retrieve time info
+            !start time
+            if(yyst >50)then
+                jd=date_2_jd(ddst,mmst,yyst+1900,0,0,0)
+            else
+                jd=date_2_jd(ddst,mmst,yyst+2000,0,0,0)
+            end if
 
-         iStime=min(iStime,jd)
+            iStime=min(iStime,jd)
 
 
-         !end time
-         if(yynd >50)then
-            jd=date_2_jd(ddnd,mmnd,yynd+1900,0,0,0)
-         else
-            jd=date_2_jd(ddnd,mmnd,yynd+2000,0,0,0)
-         end if
+            !end time
+             if(yynd >50)then
+                jd=date_2_jd(ddnd,mmnd,yynd+1900,0,0,0)
+            else
+                jd=date_2_jd(ddnd,mmnd,yynd+2000,0,0,0)
+            end if
 
-         iEtime=max(iEtime,jd)
-
+            iEtime=max(iEtime,jd)
+        end if  
 
 
 

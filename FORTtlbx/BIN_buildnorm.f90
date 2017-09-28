@@ -183,11 +183,11 @@ call get_permvec2(obs%side1_d,side1,.true.,s_st,s_end,perm1,perm2,nobs)
 !    stop
 ! end if
 
-if(nobs .eq. 0 .or. nobs > obs%nval1)then
-   write(stderr,*)"ERROR: no matching observations found or sorting error"
+if(nobs .eq. 0 .or. nobs > obs%nval1 .or. nobs>n2)then
+   write(stderr,*)"ERROR: no matching observations, or ambigous sorting problem"
+    write(stderr,*)"    Check -S or -t option?"
    stop
 end if
-
 
 !permute observations matrix (puts non-matching entries at the back)
 if(verbose)write(stderr,*)"Permuting observations, ignoring ",obs%nval1-nobs," observations"
