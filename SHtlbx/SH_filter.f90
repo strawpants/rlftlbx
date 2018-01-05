@@ -85,7 +85,7 @@ lmaxW=0
 lminW=1d6
 replsuf=.false.
 rem_rest=.false.
-
+outdir=""
 allocate(SHfiles(200))
 
 !process command line options
@@ -653,7 +653,6 @@ if(error)call permute_rows(tmp_sig(:,:),pos,.false.)
          else
             dum=trim(SHfiles(i))//trim(app)
          end if
-
          !trim leading directories
          ind=index(dum,'/',.true.)
          dum=trim(outdir)//dum(ind+1:);
