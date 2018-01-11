@@ -1,0 +1,177 @@
+#!/bin/bash
+
+# script to apply the self consistent sea level equation ( solved already in the form of a 2D Greensfunction) to specific laoding scenarios
+
+#fixed small(?) bug in the construction of RS from QS (took DS at first)
+
+
+ help()
+ {
+   echo "Apply sea level equation to loading scenarios"
+   echo " expressed in Spherical Harmonics"
+   echo "Usage: $0 -G GREENSFUNCFILE [OPTIONS] SHFILES"
+   echo "Where GREENSFUNCFILE is a file containing the"
+   echo " 2D Greens function for the Sea level equation"
+   echo "( file must be in the BINV format)"
+   echo " OPTIONS:"
+   echo "-O OCEANMAT: explicitly supply matrix of the ocean function"
+   echo "The default tries to retrieve the file name from the GREENSFUNCFILE"
+   echo "-N : Normalize the input to 1 gigaton of water (keeps the sign)"
+   echo "Output (N,U) are provided in the CF frame"
+   exit 1
+ }
+
+ #if no argument
+ #
+ if [ $# -lt 1 ]; then
+   help
+ fi
+
+#process comand line arguments
+while getopts G:O:N opt
+do	case "$opt" in
+	G) GREENS=$OPTARG;;
+	O) OCEMAT=$OPTARG;;
+	N) NORM=TRUE;;
+	[?]) help;;
+	esac
+done
+
+#shift command line arguments by the amount of options
+shift `echo $OPTIND | awk '{print $1-1}'`
+
+#input checks
+if [ ! ${GREENS} ]; then
+    echo "ERROR: no Greens function supplied"
+    exit 1
+fi
+
+
+# check whether the Greens file uses eustatic sealevel for degree 0 (old)
+DSop=`BIN_swiss ${GREENS} | awk 'BEGIN{n=0}/MASS TAKEN FROM THE OCEAN/{print "o";n=1}END{if(n==0){print "-"}}'`
+
+if [ $DSop == "-" ]
+then
+    echo WARNING: OLD style SEA LEVEL Greens function, consider recomputing
+fi
+
+#amount of input files
+nf=$#
+
+#get lmax
+lmax=`BIN_swiss ${GREENS} | awk '/Lmax/{print $(NF)}'`
+
+#get used ocean matrix (if not provided already) and check whether it exists
+if [ ! $OCEMAT ]; then # try to retrieve from GREENS function file
+    OCEMAT=`BIN_swiss ${GREENS} | awk '/Ocean file used/{getline;print $0}'`
+    OCEMAT=`dirname $GREENS`/$OCEMAT
+fi
+
+if [ ! -e ${OCEMAT} ]; then
+    echo "Required ocean matrix file does not exist:" $OCEMAT
+    echo "Make sure the program can find it"
+    exit 1    
+fi
+
+
+#determine whether the matrix incorporates rotational feedback
+rot=`BIN_swiss ${GREENS} | awk '/k2_body/{print "TRUE"}'`
+
+if [ $rot ]
+then
+    echo incorporating rotational feedback
+else
+    echo not incorporating rotational feedback
+fi
+
+
+#extract used elastic load love numbers from the GREENSFUNCTION data file
+BIN_swiss -p=s,v1,v2,v3 $GREENS | awk '/TCN [ 0-9][ 0-9][0-9]  0/&&$2>=1 {if($2==1){print $2, $(NF-2),$(NF-1),$(NF),"CF"}else{print $2, $(NF-2),$(NF-1),$(NF)}}' > loadlove.txt
+
+
+#normalize input to 1 gigaton of melting
+infiles=''
+if [ $NORM ]
+then
+    for f in $*
+    do
+	fout=${f}_nrm
+	SC=`SH_dump -l0 -m2 -i -R $f | SH_dump -m5 | awk 'NR>1&&/0    0/{print 2.7e-6/$3}'`
+	SH_dump -ms$SC $f > $fout
+	infiles="${infiles} ${fout}"
+    done
+
+
+else
+    infiles=$*
+fi
+
+
+
+#convert input loading to its direct sea level ( only the load and its effect on the solid Eart but not the effect from sea level itself)
+if [ $rot ]
+then
+    for f in $infiles
+    do
+    #calculate change in rotational potential due to load
+	SH_dump -l2 -R -i -m2 $f | SH_dump -m7 | SH_dump -E4 -m5 -l2,2 > tmp
+    #convert load to direct potential | and then to induced direct sea level
+	SH_dump -l${lmax} -R -i -m2 $f | SH_dump -m5$DSop -E0loadlove.txt | SH_dump -atmp > ${f}_WR.DS
+
+    done
+
+#construct list of input files for direct sea level
+    files=`echo $infiles | awk '{for(i=1;i<=NF;i++){printf("%s_WR.DS ",$(i))}}END{printf "\n"}'`
+    QSfiles=`echo $infiles | awk '{for(i=1;i<=NF;i++){printf("%s_WR.QS ",$(i))}}END{printf "\n"}'`
+else
+    for f in $infiles
+    do
+    #convert load to direct potential | and then to induced direct sea level
+	SH_dump -l${lmax} -R -i -m2 $f | SH_dump -m5$DSop -E0loadlove.txt > ${f}.DS
+    done
+
+#construct list of input files for direct sea level
+    files=`echo $infiles | awk '{for(i=1;i<=NF;i++){printf("%s.DS ",$(i))}}END{printf "\n"}'`
+    QSfiles=`echo $infiles | awk '{for(i=1;i<=NF;i++){printf("%s.QS ",$(i))}}END{printf "\n"}'`
+fi
+
+
+
+
+#apply greens function to input files ( construct Quasi spectral sea level)
+SH_filter -W${GREENS} -rQS $files
+
+
+#Localize quasi spectral sea level in the ocean region ( construct relative sea level)
+SH_filter -W${OCEMAT} -rRS $QSfiles
+
+#now construct derived observables ( geoid and uplift )
+
+if [ $rot ]
+then
+    for f in $infiles
+    do
+	#Effect of rotational feedback on the geoid ( Contributions from both: Ice & sea level)
+	SH_dump -l2,2 -a${f}_WR.RS -R -i -m2 $f | SH_dump -m7 -l2,2 > tmp
+
+#geoid:  add external load and relative sea level and convert to direct potential and consequently to geoid height
+	SH_dump -l${lmax},1 -a${f}_WR.RS -E0loadlove.txt -i -m2 $f | SH_dump -atmp -m1 > ${f}_WR.N
+
+	#Effect of rotational feedback on the uplift ( Contributions from both: Ice & sea level)
+	#this requires the body love numbers
+	SH_dump -l2,2 -a${f}_WR.RS -R -i -m2 $f | SH_dump -m7 | SH_dump -E4 -m4 -l2,2 > tmp
+	
+#uplift:  same story but convert loading potential to uplift
+	SH_dump -l${lmax},1 -a${f}_WR.RS -R -i -m2 $f | SH_dump -m4 -E0loadlove.txt | SH_dump -atmp > ${f}_WR.U
+
+    done
+else
+    for f in $infiles
+    do
+#geoid:  add external load and relative sea level and convert to direct potential and consequently to geoid height
+	SH_dump -l${lmax},1 -a${f}.RS -E0loadlove.txt -i -m2 $f | SH_dump -m1 > ${f}.N
+	
+#uplift:  same story but convert loading potential to uplift
+	SH_dump -l${lmax},1 -a${f}.RS -R -i -m2 $f | SH_dump -m4 -E0loadlove.txt > ${f}.U
+    done
+fi

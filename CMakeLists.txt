@@ -153,6 +153,10 @@ target_link_libraries(${prog} ${RLFLIB} ${NETCDF_LIBRARIES} ${SHTOOLS_LIBRARY} $
 install(TARGETS ${prog} DESTINATION bin)
 endforeach(prog in ${GRDPROG})
 
+#also install auxiliary scripts
+file(GLOB AUXSCRIPTS auxscripts/*)
+install(PROGRAMS ${AUXSCRIPTS} DESTINATION bin)
+
 ## Also make sure to install data files (load love nubers EOP parameters etc)
 install(DIRECTORY data/ DESTINATION share/rlftlbx)
 

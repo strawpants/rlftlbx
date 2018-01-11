@@ -1,0 +1,108 @@
+#!/bin/bash
+
+#author R. Rietbroek
+#Wed Feb 22 16:33:08 2012
+
+#script to combine and solve normal systems using VCE
+
+ITER=5 #defaults to 5 iterations
+NORMFILE=VCE.norm # default normal system output file
+usefifo=false
+
+ help_solveVCE()
+ {
+   echo "Combine and solve normal equations using Variance Component Estimation" 1>&2
+   echo " Usage: solveVCE [OPTIONS] FILES" 1>&2
+   echo " OPTIONS are:" 1>&2
+   echo " -I N: use N iterations (default is 5)" 1>&2
+   echo " -N NORMFILE: write the final combination normal systemn to NORMFILE (default VCE.norm)"  1>&2
+   echo " -f: use fifos for intermediate files"  1>&2
+   echo " -A: Autoreduce variables unique to one system" 1>&2
+   echo " -F FIXREGEX First fix variables obeying regular expression" 1>&2
+   echo " -C COVSC1/COVSC2/.. Apply apriori scales to the covariances" 1>&2
+   echo " -S STRSTART/STREND: restrict the parameter comparison to these indices" 1>&2
+   echo " -w Shut off warnings" 1>&2
+   echo " -s Solve final combined system" 1>&2
+
+  exit 1
+ }
+
+ if [ $# -lt 2 ]; then
+     help_solveVCE
+ fi
+
+while getopts I:N:fAF:C:S:ws opt
+do	case "$opt" in
+	I) ITER=$OPTARG;;
+	N) NORMFILE=$OPTARG;;
+	f) usefifo=true;;
+	A) reduce=-ra;;
+	F) fix="-fi='$OPTARG'";;
+	C) cov="-C='$OPTARG'";;
+	S) STR="-S='$OPTARG'";;
+	w) warn="-w";;
+	s) solve="-s";;
+	[?]) help_solveVCE;;
+	esac
+done
+
+if [ $ITER -lt 2 ]; then
+    echo "at least 2 iterations are needed" 1>&2
+    exit 1
+fi
+
+#get filename
+shift `echo $OPTIND | awk '{print $1-1}'`
+files=$*
+filesorig=$files # make a copy
+
+#get amount of input files
+NF=`echo $files | awk '{print NF}'`
+
+
+#make the necessary amount of fifos
+#fifolist=`echo $NF | awk '{for(it=1;it<='$ITER'+1;it++){for(i=1;i<=$1;i++){printf " tmp.fifo_i%d_%03d",it,i}}}END{printf "\n"}'` 
+fifolist=`echo $NF | awk '{for(i=1;i<=$1;i++){printf " tmp.fifo_%03d",i}}END{printf "\n"}'` 
+
+if $usefifo ; then
+    BG='&'
+    mkfifo $fifolist
+
+fi
+
+rm -f cmdlist
+
+
+
+#create a command list
+IITER=1
+
+if [ "$fix" ] || [ "$reduce" ] || [ "$cov" ] ;
+then
+    echo fixing and/or reducing
+    echo "NORM_tool $warn $reduce -Lw=test.conf $fix $cov $STR -F=tmp.fifo $files $BG" >> cmdlist
+    files=$fifolist
+    # files=`echo $NF | awk '{for(i=1;i<=$1;i++){printf " tmp.fifo_i%d_%03d",'$IITER',i}}END{printf "\n"}'` 
+    # IITER=$(($IITER+1))
+fi
+
+
+echo "NORM_tool $warn -V -Vp -v -s -F=tmp.fifo $STR -cf $files $BG" >> cmdlist
+
+# fifol=`echo $NF | awk '{for(i=1;i<=$1;i++){printf " tmp.fifo_i%d_%03d",'$IITER',i}}END{printf "\n"}'` 
+# IITER=$(($IITER+1))
+
+for i in `seq 1 $((ITER-1))`
+do
+    echo "NORM_tool $warn -V -Vp -v -s -F=tmp.fifo $STR -cf $fifolist $BG" >> cmdlist
+    # fifol=`echo $NF | awk '{for(i=1;i<=$1;i++){printf " tmp.fifo_i%d_%03d",'$IITER',i}}END{printf "\n"}'`
+    # IITER=$(($IITER+1))
+done
+
+#final call combine systems
+echo "NORM_tool $solve $warn -F=$NORMFILE $STR -v -cf $fifolist" >> cmdlist
+
+cat cmdlist | bash | grep 'VCE,' | tee VCEscales.txt
+
+
+rm -f $fifolist cmdlist
