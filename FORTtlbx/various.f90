@@ -2,6 +2,22 @@
 
 !!Updated by Roelof Rietbroek, Fri Apr 30 11:50:24 2010
 
+function DMtrace(mat)
+    double precision,intent(in),dimension(:,:)::mat
+    double precision::DMtrace
+    integer(8)::i
+
+    if (size(mat,1) .ne. size(mat,2))then
+        write(0,*)"ERROR in DMtrace: matrix not square"
+        stop 
+    end if
+    DMtrace=0.d0
+    do,i=1,size(mat,1)
+        DMtrace=DMtrace+mat(i,i)
+    end do
+
+end function
+
 !subroutine to reallocate a 1D pointer (double precision) ( and copy data)
 subroutine reallocate_dptr(in,nadd)
 implicit none

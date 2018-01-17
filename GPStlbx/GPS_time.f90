@@ -124,6 +124,43 @@ write(sinex_date,'(i2.2,a1,i3.3,a1,i5.5)')yr,':',doy+1,':',sec
 
 end function sinex_date
 
+
+function getMonth(decyr)
+implicit none
+double precision,intent(in)::decyr
+integer:: getMonth
+integer::mndy(12)
+data mndy/31,28,31,30,31,30,31,31,30,31,30,31/
+integer::yr,dpy,dy,i
+
+yr=int(decyr)
+if(mod(yr,4) .eq. 0)then
+    mndy(2)=29
+    dpy=366
+else
+    dpy=365
+end if
+!comute day in the year
+dy=int((decyr-yr)*dpy)
+
+getMonth=0
+
+!now find month 
+do,i=1,12
+   if(dy<=mndy(i))then
+      getMonth=i
+      exit
+   end if
+   !subtract the amount of days in the month considered
+   dy=dy-mndy(i)
+end do
+
+
+
+end function getMonth
+
+
+
 !function which returns the current time or argument ( dd-mm-yyyy)  as a sinex date string
 function GPS_date(dtstr)
 implicit none

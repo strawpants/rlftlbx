@@ -90,6 +90,11 @@ interface
      integer,intent(out)::mn,yr,dy,sec
    end subroutine jd_2_date
 
+    function getMonth(decyr)
+    implicit none
+    double precision,intent(in)::decyr
+    integer:: getMonth
+    end function
 
   !sinex write routines
    subroutine init_sinex(file,unit,line)

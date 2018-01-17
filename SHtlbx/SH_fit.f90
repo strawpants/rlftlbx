@@ -14,6 +14,7 @@
 program SH_fit
 use SHtlbx
 use FORTtlbx
+use GPStlbx,only:getMonth
 implicit none
 integer::narg,i,j,lmax,lmin,lmaxf,gtyp,ind,pos,itharg,l,m,stderr,nf,posm
 character(200)::dum
@@ -23,14 +24,19 @@ double precision::mean,tcent,tstart,tend,t0,ltpl,Ohm,ohmtmp,ddot
 double precision,allocatable, dimension(:)::time,rhs,input,clmrms
 double precision,allocatable,dimension(:)::stime,etime,sigma0
 double precision,allocatable,dimension(:,:)::clm,clm_sig,clm_f,clm_sigf
-double precision,allocatable, dimension(:,:)::A,Atmp,N
+double precision,allocatable, dimension(:,:)::A,Atmp,N,Nreg
 integer,allocatable::perm(:)
+integer::nmonths
+parameter(nmonths=12)
 integer::iargc,chunk,npara,nshift
 character(10),pointer::para_des(:) !pointer holding parameter descriptions
 integer,pointer::para_typ(:) ! pointer holding type description
 integer::poly_ord,otyp,sts,nds,stc,ndc
 character(200)::basen,fileout
 logical::resSH
+logical::usereg !uses an additional regularization
+logical::withclim
+double precision:: regscale
 
 !get command line arguments
 narg=iargc()
@@ -49,7 +55,8 @@ Ohm=2*pi
 t0=2003.0
 sigscaleresi=.false.
 allocate(filen(chunk))
-
+usereg=.false. 
+withclim=.false.
 itharg=0
 nf=0
 lmax=-10!gives an error if not redefined
@@ -129,7 +136,28 @@ do,i=1,narg
          end do
 
          npara=npara+poly_ord+1
+      case('fc')!monthly climatology
+         withclim=.true.         
+         call realloc_ptr(para_des,nmonths)
+         call realloc_ptr(para_typ,nmonths)
+
+         para_des(npara+1)='JAN'
+         para_des(npara+2)='FEB'
+         para_des(npara+3)='MAR'
+         para_des(npara+4)='APR'
+         para_des(npara+5)='MAY'
+         para_des(npara+6)='JUN'
+         para_des(npara+7)='JUL'
+         para_des(npara+8)='AUG'
+         para_des(npara+9)='SEP'
+         para_des(npara+10)='OCT'
+         para_des(npara+11)='NOV'
+         para_des(npara+12)='DEC'
          
+         para_typ(npara+1:npara+nmonths)=6
+         
+         npara=npara+nmonths
+      
       case('l=')!limit maximum (and possibly minum degree)
          limdeg=.true.
          ind=index(dum,',')
@@ -165,6 +193,28 @@ if(nf<1)then
    write(stderr,*)'No files specified, quitting'
    stop
 end if
+
+
+!possibly when a polynomial is estimates with monthly climatology we need to
+!apply an additional regularization
+if(withclim .and. npara .ne. 12)then
+    usereg=.true.
+    allocate(Nreg(npara,npara))
+    Nreg=0.d0
+    !we're going to create a regularization matrix, Nreg, which constrains the sum of
+    !all the monthly values to be 0
+    do,i=1,npara
+        do, j=1,i
+            if(para_typ(i)==6 .and. para_typ(j)==6)then
+                Nreg(i,j)=1
+                Nreg(j,i)=1
+            end if
+        end do
+    end do
+
+
+end if
+
 
 
 
@@ -250,8 +300,14 @@ if(npara >0)then
             end do
          end do
          nshift=nshift+poly_ord+1
-      end select
-   end do
+     case(6)!monthly climatology
+        do,i=1,nf
+            A(i,nshift+getMonth(time(i))+1)=1.d0
+        end do
+        nshift=nshift+nmonths
+     end select
+
+      end do
 
 
    
@@ -296,7 +352,13 @@ if(npara >0)then
       call dgemv('T',nf,npara,1.d0,Atmp,nf,input,1,0.d0,rhs,1)
       ! apriori residual fit
       ltpl=ddot(nf,input,1,input,1)
+    
+      !possibly apply a regularization
+      if (usereg)then
+            regscale=Mtrace(N)/Mtrace(Nreg)
+            N=N+regscale*Nreg 
 
+      end if
       !solve the goodies
       call solve_norm(N,rhs,ltpl)
 
@@ -426,6 +488,7 @@ write(stderr,frmt)" -fa: Fit an annual harmonic through the coefficients"
 write(stderr,frmt)" -fs: Fit an (semi)annual harmonic through the coefficients"
 write(stderr,frmt)" -fp[=ORD,T0]: fit a polynomial of order ORD (default=2) through the data"
 write(stderr,frmt)"  Note: cannot be combined with -ft and -fm since it causes a rank defect"
+write(stderr,frmt)" -fc: Fit a monthly climatology through the data (mean jan,feb,etc..)"
 write(stderr,frmt)"  Multiple -f options are allowed"
 write(stderr,frmt)"  -F=BASENAME: use a different base for the output (default is SHFIT_)"
 write(stderr,frmt)"  -s: scale the errors by the posteriori sigma computed"

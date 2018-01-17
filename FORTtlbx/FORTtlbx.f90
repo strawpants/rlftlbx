@@ -50,6 +50,14 @@ interface matmulblas
     
    end function matmul2dclean
 end interface
+interface Mtrace
+    function DMtrace(mat)
+        double precision,intent(in),dimension(:,:)::mat
+        double precision::DMtrace
+    end function
+
+end interface
+
 interface sort_f90
    subroutine isort_f90(perm,ints,inv)
      implicit none
