@@ -14,7 +14,7 @@
 program SH_fit
 use SHtlbx
 use FORTtlbx
-use GPStlbx,only:getMonth
+use GPStlbx
 implicit none
 integer::narg,i,j,lmax,lmin,lmaxf,gtyp,ind,pos,itharg,l,m,stderr,nf,posm
 character(200)::dum
@@ -212,6 +212,9 @@ if(withclim .and. npara .ne. 12)then
         end do
     end do
 
+    !do,i=1,npara
+       !write(0,'(14F2.0)')Nreg(i,:)
+    !end do
 
 end if
 
@@ -302,6 +305,7 @@ if(npara >0)then
          nshift=nshift+poly_ord+1
      case(6)!monthly climatology
         do,i=1,nf
+            write(0,*)time(i),getMonth(time(i))
             A(i,nshift+getMonth(time(i))+1)=1.d0
         end do
         nshift=nshift+nmonths

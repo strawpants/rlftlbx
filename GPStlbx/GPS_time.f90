@@ -168,9 +168,8 @@ double precision,intent(in)::decyr
 integer:: getMonth
 integer::yr,dd,sec !dummy vars
 
-
-call getYYMMDDSS(decyr,yr,getMonth,dd,sec)
-
+write(0,*)decyr
+!call getYYMMDDSS(decyr,yr,getMonth,dd,sec)
 
 
 end function getMonth
