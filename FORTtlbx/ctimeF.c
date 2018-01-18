@@ -36,6 +36,12 @@ void fstrftime_(char* outputstr,char* frmt, time_t * datetime,int flen1, int fle
     strftime (outputstr, flen2, frmt, localtime(datetime) );    
 }
 
+//returns the month (1-12) 
+int fmonth_(time_t * datetime){
+    struct tm* dt=localtime(datetime);
+    return dt->tm_mon+1;
+
+}
 
 
 

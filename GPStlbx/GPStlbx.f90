@@ -90,11 +90,6 @@ interface
      integer,intent(out)::mn,yr,dy,sec
    end subroutine jd_2_date
 
-    function getMonth(decyr)
-    implicit none
-    double precision,intent(in)::decyr
-    integer:: getMonth
-    end function
 
     subroutine getYYMMDDSS(decyr,yr,mn,dd,sec)
     implicit none

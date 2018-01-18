@@ -14,7 +14,7 @@
 program SH_fit
 use SHtlbx
 use FORTtlbx
-use GPStlbx
+use FORTtime
 implicit none
 integer::narg,i,j,lmax,lmin,lmaxf,gtyp,ind,pos,itharg,l,m,stderr,nf,posm
 character(200)::dum
@@ -37,7 +37,8 @@ logical::resSH
 logical::usereg !uses an additional regularization
 logical::withclim
 double precision:: regscale
-
+type(time_t)::epoch
+integer:: fmonth
 !get command line arguments
 narg=iargc()
 lmin=0
@@ -307,8 +308,9 @@ if(npara >0)then
          nshift=nshift+poly_ord+1
      case(6)!monthly climatology
         do,i=1,nf
-            write(0,*)time(i),getMonth(time(i))
-            A(i,nshift+getMonth(time(i))+1)=1.d0
+            epoch=FTime_fromDecYr(time(i))
+            !write(0,*)fmonth(epoch)
+            A(i,nshift+fmonth(epoch))=1.d0
         end do
         nshift=nshift+nmonths
      end select
