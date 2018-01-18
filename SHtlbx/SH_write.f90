@@ -53,10 +53,14 @@ call SH_lm(size(clm,1),lmax,m)
 !write(*,*)lmax,m
 !open file if output goes to file
 if(present(filen))then
-un=13
-open(unit=un,file=filen,status='new')
+    if(filen == '-')then
+        un=6 !default output
+    else !open file
+        un=13
+        open(unit=un,file=filen,status='new')
+    end if
 else!standard output (default)
-un=6
+    un=6
 end if
 
 !setup time tags

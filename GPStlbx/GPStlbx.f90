@@ -96,7 +96,13 @@ interface
     integer:: getMonth
     end function
 
-  !sinex write routines
+    subroutine getYYMMDDSS(decyr,yr,mn,dd,sec)
+    implicit none
+    integer,intent(out)::yr,mn,dd,sec
+    double precision,intent(in)::decyr
+    end subroutine getYYMMDDSS  
+
+!sinex write routines
    subroutine init_sinex(file,unit,line)
      implicit none
      integer,intent(out)::unit

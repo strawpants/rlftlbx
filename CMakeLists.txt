@@ -91,11 +91,12 @@ link_directories(${OPTBLAS_LIBPATH})
 
 #add module sources
 
-LIST(APPEND F90TOPMODULES FORTtlbx/FORTtlbx.f90)
+LIST(APPEND F90TOPMODULES FORTtlbx/FORTtlbx.f90 FORTtlbx/FORTtime.f90)
 LIST(APPEND F90MODULES FORTtlbx/AutoRegressive.f90 FORTtlbx/BINfiletools.f90 FORTtlbx/EOP_tools.f90  FORTtlbx/GroopsFile.f90 FORTtlbx/BIN_operations.f90 )
 LIST(APPEND F90MODULES GPStlbx/GPStlbx.f90 GPStlbx/SINEXtools.f90 )
 LIST(APPEND F90MODULES GRDtlbx/grdtlbx.f90 GRDtlbx/PSMSL_TOOL.f90 )
 LIST(APPEND F90MODULES SHtlbx/SHtlbx.f90 SHtlbx/SH_trpnt_mem.f90 SHtlbx/SH_synthesis.f90 SHtlbx/GIA_func.f90 )
+
 add_library(modtop OBJECT ${F90TOPMODULES} )
 add_library(mod OBJECT ${F90MODULES} )
 add_dependencies(mod modtop)
@@ -113,7 +114,7 @@ LIST (APPEND F90OBJS GRDtlbx/NC_write.f90 GRDtlbx/OBP_obseq.f90)
 
 
 #Cstuff 
-LIST(APPEND COBJS FORTtlbx/get_permvecC.c  FORTtlbx/REGEX.c  FORTtlbx/Sort_various.c  FORTtlbx/STREAMFILE.c )
+LIST(APPEND COBJS FORTtlbx/get_permvecC.c  FORTtlbx/REGEX.c  FORTtlbx/Sort_various.c  FORTtlbx/STREAMFILE.c FORTtlbx/ctimeF.c )
 
 
 add_library(${RLFLIB} STATIC $<TARGET_OBJECTS:modtop> $<TARGET_OBJECTS:mod> ${F90OBJS} ${COBJS} )

@@ -109,6 +109,7 @@ program SH_dump
 use SHtlbx
 use SHTOOLS
 use EOP_tools
+use FORTtime
 implicit none
 integer::narg,i,lmax,lmin,pos,typ,maxf,add,subt,cmod,otyp,ind,st,nd,ftyp,gtyp,FR,etyp
 integer::ltyp,itharg,l,m,unit,ms,stderr
@@ -145,7 +146,8 @@ logical::geocJ2
 double precision::c30,c31,s31
 double precision::mjd(1:1)
 double precision::Ji3tmp(3,3) ! needed for buggy gfortan?
-
+character(200)::outputfile
+type(time_t)::ctimet
 !initialize parameters
 unitin=.false.
 c00sc=1.d0
@@ -211,7 +213,7 @@ dot=.false. ! add dot terms
 harm=.false. ! add harmonic terms (annual semi annual)
 lmaxdot=4
 dotref=2000. !refernce in year
-
+outputfile='-'
 !!set up processing strategy from command line
 !get number of command line arguments
 narg=iargc()
@@ -379,8 +381,7 @@ do,i=1,narg
             write(stderr,*)"ERROR:maximum number of files which may be added",maxf
             stop
          end if
-         if(dum(3:3) .eq. ' ')then !get next argument
-            itharg=itharg+1
+         if(dum(3:3) .eq. ' ')then !get next argument itharg=itharg+1
             call getarg(itharg,dum)
             addfile(add)=dum
          else!or when the filename is glued to the option tag
@@ -406,8 +407,7 @@ do,i=1,narg
          read(dum(3:),'(i1)')cmod
          
          if(cmod .eq. 7)then !read geocenterfilename from command line
-            if(dum(4:4) .eq. ' ')then !get next argument
-               itharg=itharg+1
+            if(dum(4:4) .eq. ' ')then !get next argument itharg=itharg+1
                call getarg(itharg,geocfile)
             else!or when the filename is glued to the option tag
                geocfile=dum(4:)
@@ -552,9 +552,14 @@ do,i=1,narg
          read(dum(3:ind-1),*)itstart
          read(dum(ind+1:ind2-1),*)itcent
          read(dum(ind2+1:),*)itend
-
+      case('o')!output file name instead of 
+            if(dum(3:).eq. ' ')then
+               itharg=itharg+1
+               call getarg(itharg,outputfile)
+            else
+               outputfile=trim(dum(4:))
+            end if
       case default
-         write(stderr,*)'ERROR SH_dump:unknown option: ',dum(2:2)
          call help()
       end select
    end if
@@ -1243,12 +1248,22 @@ if(error)then
 end if
 end if
 
+if (outputfile .ne. '-')then
+    dum=trim(outputfile)
+    ctimet=FTime_fromDecyr(tcent)
+    call fstrftime(outputfile,dum,ctimet)
+   ! write(0,*)outputfile
+end if
 
 if(error)then
-call SH_write(clm=clm,slm=slm,clm_sig=clm_sig,slm_sig=slm_sig,tstart=tstart,tcent=tcent,tend=tend,typ=otyp)
+     call SH_write(filen=trim(outputfile),clm=clm,slm=slm,clm_sig=clm_sig,&
+         slm_sig=slm_sig,tstart=tstart,tcent=tcent,tend=tend,typ=otyp)
 else
-call SH_write(clm=clm,slm=slm,tstart=tstart,tcent=tcent,tend=tend,typ=otyp)
+     call SH_write(filen=trim(outputfile),clm=clm,slm=slm,tstart=tstart,tcent=tcent,tend=tend,typ=otyp)
 end if
+
+
+
 end program SH_dump
 
 !!subroutine which displays the help function when wrong syntax is tried
@@ -1405,6 +1420,9 @@ write(stderr,frmt)"            CL: Center of surface Lateral figure"
 write(stderr,frmt)"            CH: Center of surface Height figure"
 write(stderr,frmt)'-TTSTART,TCENTER,TEND: explicitly specify timetags for file output, TSTART,TCENTER,TEND'
 write(stderr,frmt)'                       in decimal years'
+write(stderr,frmt)'-o OUTPUTFILE: Output not to standard output but to output file. - denotes standard output (default). '
+write(stderr,frmt)'               Automatic tags are supported according to C like strftime '
+write(stderr,frmt)'               (http://www.cplusplus.com/reference/ctime/strftime/)'
 write(stderr,frmt)'example: SH_dump -m1 -g2 -w400 -l50 -f1 SH_file.coef'
 write(stderr,frmt)'         Calculates equivalent water height, applies a geocenter model, uses filtering and smoothing'
 write(stderr,frmt)'         And it only considers degrees smaller or equal than 50'

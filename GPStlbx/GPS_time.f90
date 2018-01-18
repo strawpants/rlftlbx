@@ -124,14 +124,15 @@ write(sinex_date,'(i2.2,a1,i3.3,a1,i5.5)')yr,':',doy+1,':',sec
 
 end function sinex_date
 
-
-function getMonth(decyr)
+!get year,momth and day and seconds from decimal year 
+subroutine getYYMMDDSS(decyr,yr,mn,dd,sec)
 implicit none
+integer,intent(out)::yr,mn,dd,sec
 double precision,intent(in)::decyr
-integer:: getMonth
 integer::mndy(12)
+integer::i,dpy
 data mndy/31,28,31,30,31,30,31,31,30,31,30,31/
-integer::yr,dpy,dy,i
+
 
 yr=int(decyr)
 if(mod(yr,4) .eq. 0)then
@@ -140,26 +141,69 @@ if(mod(yr,4) .eq. 0)then
 else
     dpy=365
 end if
-!comute day in the year
-dy=int((decyr-yr)*dpy)
 
-getMonth=0
+dd=int((decyr-yr)*dpy)
 
+sec=((decyr-yr)*dpy-dd)*86400
+
+mn=0
 !now find month 
 do,i=1,12
-   if(dy<=mndy(i))then
-      getMonth=i
+   if(dd==mndy(i))then
+      mn=i
       exit
    end if
    !subtract the amount of days in the month considered
-   dy=dy-mndy(i)
+   dd=dd-mndy(i)
 end do
+
+
+end subroutine
+
+
+
+function getMonth(decyr)
+implicit none
+double precision,intent(in)::decyr
+integer:: getMonth
+integer::yr,dd,sec !dummy vars
+
+
+call getYYMMDDSS(decyr,yr,getMonth,dd,sec)
 
 
 
 end function getMonth
 
+!!parse a string with time tags
+!function parseDecYrStr(frmt,decyr)
+!implicit none
+!character(400)::parseDecYrStr
+!character(*),inent(in)::frmt
+!double precision,intent(in)::decyr
+!integer::i,ind,strln
+!integer::iocur,iocurprev
+!integer::yr,mm,dd,sec
 
+!strln=len_trim(frmt)
+!call getYYMMDDSS(decyr,yr,mm,dd,sec)
+
+
+!!find and substitute occurences of %yy %mm %dd %ss
+
+
+!iocur=1
+!iocurprev=1
+
+!do while(ind < strlen)
+    !iocur=ind+index(frmt(ind:),'%')
+    !parseDecYrStr=trim(parseDecYrStr)//frmt(:ind-1    
+
+!end do
+
+
+
+!end function
 
 !function which returns the current time or argument ( dd-mm-yyyy)  as a sinex date string
 function GPS_date(dtstr)
