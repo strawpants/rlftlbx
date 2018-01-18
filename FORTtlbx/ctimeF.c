@@ -33,7 +33,7 @@ time_t fmktime_(int * yy, int * mm, int * dd, int * hh, int * min, int * ss){
 
 //function to format a time in a string
 void fstrftime_(char* outputstr,char* frmt, time_t * datetime,int flen1, int flen2){
-    fprintf(stderr,"input lengths %d %d\n",flen1,flen2);
+    /*fprintf(stderr,"input lengths %d %d\n",flen1,flen2);*/
     strftime (outputstr, flen2, frmt, localtime(datetime) );    
 
 
