@@ -18,7 +18,7 @@ use GPStlbx
 implicit none
 integer::narg,i,j,lmax,lmin,lmaxf,gtyp,ind,pos,itharg,l,m,stderr,nf,posm
 character(200)::dum
-character(200),pointer::filen(:)
+character(200),pointer::filen(:)=>null()
 logical::limdeg,weight,sigscale,rmsoutput,sigscaleresi
 double precision::mean,tcent,tstart,tend,t0,ltpl,Ohm,ohmtmp,ddot
 double precision,allocatable, dimension(:)::time,rhs,input,clmrms
@@ -29,8 +29,8 @@ integer,allocatable::perm(:)
 integer::nmonths
 parameter(nmonths=12)
 integer::iargc,chunk,npara,nshift
-character(10),pointer::para_des(:) !pointer holding parameter descriptions
-integer,pointer::para_typ(:) ! pointer holding type description
+character(10),pointer::para_des(:)=>null() !pointer holding parameter descriptions
+integer,pointer::para_typ(:)=>null() ! pointer holding type description
 integer::poly_ord,otyp,sts,nds,stc,ndc
 character(200)::basen,fileout
 logical::resSH
@@ -60,6 +60,8 @@ withclim=.false.
 itharg=0
 nf=0
 lmax=-10!gives an error if not redefined
+
+
 if(narg < 1)call help()!call help straight away
 
 
