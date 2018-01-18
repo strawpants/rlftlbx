@@ -56,8 +56,9 @@ if(present(filen))then
     if(filen == '-')then
         un=6 !default output
     else !open file
+
         un=13
-        open(unit=un,file=filen,status='new')
+        open(unit=un,file=filen,status='replace')
     end if
 else!standard output (default)
     un=6

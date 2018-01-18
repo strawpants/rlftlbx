@@ -33,7 +33,7 @@ doy=int((decyr-yr)*dpy)
 !seconds
 sec=((decyr-yr)*dpy-doy)*86400
 
-FTime_fromDecyr=fmktime(yr,0,doy,0,0,sec)
+FTime_fromDecyr=fmktime(yr,0,doy+1,0,0,sec)
 
 end function
 
