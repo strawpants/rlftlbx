@@ -12,6 +12,7 @@
    echo "Usage: $0 -G GREENSFUNCFILE [OPTIONS] SHFILES"
    echo "Where GREENSFUNCFILE is a file containing the"
    echo " 2D Greens function for the Sea level equation"
+   echo " adn SHFILES are load in equivalent water heights"
    echo "( file must be in the BINV format)"
    echo " OPTIONS:"
    echo "-O OCEANMAT: explicitly supply matrix of the ocean function"
