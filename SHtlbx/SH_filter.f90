@@ -55,10 +55,10 @@ integer::narg,i,nfiles,filt,lmax,lmin,lmaxW,lminW,nd,p1,typ,lmaxdum,itharg
 integer::l,m,stderr,side,full,sz,j,ind,k
 parameter(stderr=0)
 integer,allocatable,dimension(:)::pos,ints
-character(200)::dum,ref_sh
+character(400)::dum,ref_sh
 character(20)::app
 character(1)::trig
-Character(200),pointer,dimension(:)::SHfiles
+Character(400),pointer,dimension(:)::SHfiles
 logical::stdin,stdout,limdeg,error,blck,sym,replsuf
 double precision,allocatable,dimension(:,:)::tmp,tmp_sig,SH,time,blocktmp
 double precision,allocatable,dimension(:)::ref_field
@@ -66,7 +66,7 @@ type(BINdat)::Wsys
 integer::iargc,ldsh
 character(1)::trans
 logical::rem_rest,compl
-character(200)::outdir
+character(400)::outdir
 
 stdin=.false.
 stdout=.false.
@@ -145,6 +145,17 @@ do,i=1,narg
    case('o') !Output directory
       outdir=trim(dum(3:))//"/"
       
+      if(dum(3:3) .eq. ' ')then
+         itharg=itharg+1
+         call getarg(itharg,outdir)
+      else
+         outdir=trim(dum(3:))
+      end if
+      !possibly add a slash add the end
+      if ( outdir(len_trim(outdir):len_trim(outdir)) .ne. '/')then
+        outdir=trim(outdir)//"/"
+      end if
+
    case default
       write(stderr,*)'unkown option selected' 
       call help()
