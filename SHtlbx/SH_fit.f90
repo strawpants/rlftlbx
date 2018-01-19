@@ -144,18 +144,18 @@ do,i=1,narg
          call realloc_ptr(para_des,nmonths)
          call realloc_ptr(para_typ,nmonths)
 
-         para_des(npara+1)='JAN'
-         para_des(npara+2)='FEB'
-         para_des(npara+3)='MAR'
-         para_des(npara+4)='APR'
-         para_des(npara+5)='MAY'
-         para_des(npara+6)='JUN'
-         para_des(npara+7)='JUL'
-         para_des(npara+8)='AUG'
-         para_des(npara+9)='SEP'
-         para_des(npara+10)='OCT'
-         para_des(npara+11)='NOV'
-         para_des(npara+12)='DEC'
+         para_des(npara+1)='01JAN'
+         para_des(npara+2)='02FEB'
+         para_des(npara+3)='03MAR'
+         para_des(npara+4)='04APR'
+         para_des(npara+5)='05MAY'
+         para_des(npara+6)='06JUN'
+         para_des(npara+7)='07JUL'
+         para_des(npara+8)='08AUG'
+         para_des(npara+9)='09SEP'
+         para_des(npara+10)='10OCT'
+         para_des(npara+11)='11NOV'
+         para_des(npara+12)='12DEC'
          
          para_typ(npara+1:npara+nmonths)=6
          
