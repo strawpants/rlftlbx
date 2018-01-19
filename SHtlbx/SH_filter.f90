@@ -67,7 +67,14 @@ integer::iargc,ldsh
 character(1)::trans
 logical::rem_rest,compl
 character(400)::outdir
+character(400)::rlftlbxdir
+character(20)::DDKnames(8)
+data DDKnames/'Wbd_2-120.a_1d14p_4','Wbd_2-120.a_1d13p_4','Wbd_2-120.a_1d12p_4',&
+    & 'Wbd_2-120.a_5d11p_4','Wbd_2-120.a_1d11p_4','Wbd_2-120.a_5d10p_4',&
+    & 'Wbd_2-120.a_1d10p_4','Wbd_2-120.a_5d9p_4'/
+integer::ddknum
 
+ddknum=0
 stdin=.false.
 stdout=.false.
 limdeg=.false.
@@ -115,6 +122,16 @@ do,i=1,narg
          Wsys%file=trim(dum(3:))
          
       end if
+  case('D') !use supplied DDK filter  
+    read(dum(5:),'(I2)')ddknum
+    if( dum(2:4) .ne. 'DDK' .or. ddknum < 1 .or. ddknum > 8)then
+        write(stderr,*)"-D option not understood"
+        stop
+    end if
+    !get environment variable $RLFTLBX_DATA
+    call getenv('RLFTLBX_DATA',rlftlbxdir)
+    Wsys%file=trim(rlftlbxdir)//'/DDK/'//DDKnames(ddknum)
+  
    case('T') ! transpose matrix
       trans='T'
    case('l') !read lmax and lmin
@@ -701,6 +718,8 @@ subroutine help()
   write(unit,*)'OPTIONS can be the following:'
   write(unit,*)'   -W FILTERFILE: use the weights in the filter file'
   write(unit,*)'	  The filter file may contain either a block diagonal filter matrix, a full or symmetric matrix'
+  write(unit,*)'   -DDK[1-8]: Use the anistropic filter matrices from Kusche et al. 2009. -W is not required in that case' 
+  write(unit,*)'   see also: https://github.com/strawpants/GRACE-filter'   
   write(unit,*)'   -T : transpose filter matrix'
   write(unit,*)'   -s: write results to standard output'
   write(unit,*)'   -lLMAX,LMIN: limit the input to these degrees (sets coefficients with l<lmin and l>lmax to zero)'
