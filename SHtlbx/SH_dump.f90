@@ -381,7 +381,8 @@ do,i=1,narg
             write(stderr,*)"ERROR:maximum number of files which may be added",maxf
             stop
          end if
-         if(dum(3:3) .eq. ' ')then !get next argument itharg=itharg+1
+         if(dum(3:3) .eq. ' ')then !get next argument 
+            itharg=itharg+1
             call getarg(itharg,dum)
             addfile(add)=dum
          else!or when the filename is glued to the option tag
