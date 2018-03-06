@@ -60,6 +60,7 @@ SET(CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/modules)
 
 
 #make sure shared libraries in the installed executables point to the correct ones (may be non-standard locations)
+SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 #find prerequisites (BLAS & LAPACK)
@@ -68,11 +69,11 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 find_package(OPTBLAS REQUIRED)
 
 #find the netcdf library (Note newer cmake version could use:)
-#set (NETCDF_F90 "YES")
+set (NETCDF_F90 "YES")
 find_package (NetCDF REQUIRED COMPONENTS F90)
 
 #older cmake systems:
-##find_package(NetCDFF REQUIRED )
+#find_package(NetCDFF REQUIRED )
 
 #find the SHTOOLS library
 find_package(SHTOOLS REQUIRED )
@@ -124,7 +125,7 @@ install(TARGETS ${RLFLIB} DESTINATION lib)
 #target_include_directories(core PUBLIC ${GEO_LIB_SOURCE_DIR} ${Boost_INCLUDE_DIR})
 
 #add programs
-set(FORTPROG ascii_2_BIN BIN_BDmerge BIN_BDsplit BIN_buildnorm BIN_MATH BIN_swiss fit1D GRACE2BIN Groops2BIN NORM_tool)
+set(FORTPROG ascii_2_BIN BIN_BDmerge BIN_BDsplit BIN_buildnorm BIN_MATH BIN_MAT_TIME BIN_swiss fit1D GRACE2BIN Groops2BIN NORM_tool)
 foreach(prog  ${FORTPROG})
 add_executable(${prog} FORTtlbx/${prog}.f90)
 target_link_libraries(${prog} ${RLFLIB} ${OPTBLAS_LIBRARIES})
