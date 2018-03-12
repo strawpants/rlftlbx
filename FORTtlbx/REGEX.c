@@ -12,9 +12,9 @@ The wrapper is important as it puts null characters at the appropriate places in
 
 /*Declare a list of 300 compiled regular exppressions */
 
-const int maxr=300;
-regex_t reglist[300]; //Maximum of 300 compiled regular expressions
-int regtracker[300] = {0}; //tracker which keeps hold of the compiled regular expressions
+const int maxr=2000;
+regex_t reglist[maxr]; //Maximum of maxr compiled regular expressions
+int regtracker[maxr] = {0}; //tracker which keeps hold of the compiled regular expressions
 
 /* Function which compiles a new regular expression and puts it in an empty slot */
 

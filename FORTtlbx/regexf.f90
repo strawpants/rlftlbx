@@ -24,7 +24,7 @@ implicit none
   
   logical::ifile
   integer::maxlen
-  parameter(maxlen=10000)
+  parameter(maxlen=500000)
   character(maxlen)::dumchar !maximum regex length
   character(80)::dum
   integer::unit,stat,stderr
