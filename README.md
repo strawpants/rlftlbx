@@ -30,7 +30,13 @@ git@gitlab.igg.uni-bonn.de:roelof/rlftlbx.git
 mkdir rlftlbx_build;cd rlftblx_build
 
 cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="ADDITIONALLIBPATH1;PATH2" -DCMAKE_INSTALL_PREFIX="INSTALLPATH" PATHTORLFTLBXROOT
-
+```
+Alternatively if this does not work try to be more specific:
+```
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_LIBRARY_PATH="/path/to/BLAS/lib;/path/to/netcdf/fortran/lib64;/path/to/SHTOOLS/lib" -DCMAKE_INCLUDE_PATH="/path/to/netcdf/include;/path/to/BLAS/include" -DCMAKE_INSTALL_PREFIX="INSTALLPATH" PATHTORLFTLBXROOT
+```
+Once cmake completes successfully, run:
+```
 make 
 
 make install
