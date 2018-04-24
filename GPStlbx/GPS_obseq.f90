@@ -56,7 +56,7 @@ integer,intent(in)::shtyp,frame
 integer::pos,nc,ns,inds,indc,l,m,i,ndat,j
 integer,allocatable,dimension(:)::Asvec,Acvec,pcvec,psvec
 double precision::latold,lonold
-double precision,allocatable,dimension(:)::p,dp,cosmlon,sinmlon,deg,ord,hnm,lnm
+double precision,allocatable,dimension(:)::p,dp,cosmlon,sinmlon,deg,ord,hnm,lnm,knm
 character(1)::shtag
 integer::stderr
 
@@ -66,7 +66,7 @@ stderr=0
 select case(shtyp)
 case(1) ! surface loading coefficients expressed in equiv water height
    shtag='T'
-case(2) ! Stokes coefficients ( normalized wrt GM/R)
+case(2,5) ! Stokes coefficients ( normalized wrt GM/R)
    shtag='G'
 case(3) !Purcell et al 2011 GIA relationship
    shtag='P' ! from 'P' ost Glacial Rebound
@@ -165,6 +165,13 @@ case(2) ! relate to stokes coefficients
    hnm=hnm*RE
    lnm=lnm*RE
 
+case(5) !Same as shtyp==2 but also account for solid Earth loading effects
+    !(i.e.potential also contains solid Earth contribution)
+   allocate(knm(pos))
+   call SH_loadlove(hnm=hnm,lnm=lnm,knm=knm,typ=ltyp,frame=frame)
+
+   hnm=hnm*RE/(1+knm)
+   lnm=lnm*RE/(1+knm)
 case(3) ! get Purcell et al 2011 GIA--Uplift relationship
    call SH_loadGIA_uplift_ratio(rat=hnm,typ=1)
    ! do i=1,pos

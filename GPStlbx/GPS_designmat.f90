@@ -24,7 +24,8 @@
 !!Updated by Roelof Rietbroek, Wed Aug 22 09:35:45 2012
 !! added GIA Stokes Coefficients using the relationship by Purcell et al 2011
 !! added horizontal poloidal SH expansion
-
+!!Updated  24 April 2018 add option to compute loading from potential which also
+!includes solid Earth loading effect
 
 program GPS_designmat
 use binfiletools
@@ -45,14 +46,15 @@ double precision,allocatable,target::lonlat(:,:)
 double precision,pointer,dimension(:)::lon,lat,height,x,y,z
 character(24),pointer::dat_d(:),plate(:),plate3(:)
 character(24),target,allocatable::unk_d(:)
-logical::platecol,eulerplate,potsh
+logical::platecol,eulerplate,potshdirect
 integer::shft1,shftp,k,j
 double precision,allocatable::tmp(:,:)
 integer::iargc,ncol,nplate,ltyp,frame
 integer::helm_inc,helm_exc
-logical:: giash,horsh
+logical:: giash,horsh, potsh
 
 !! defaults/initializations
+potshdirect=.false.
 potsh=.false.
 platecol=.true.
 eulerplate=.false.
@@ -117,7 +119,11 @@ do,i=1,narg
 
          select case(dum(3:3))
          case('p')
-            potsh=.true.
+             if(dum(4:4) == 's')then
+                potsh=.true.
+            else    
+                potshdirect=.true.
+            end if
          case('g')
             giash=.true.
          case('v')
@@ -165,7 +171,7 @@ end do
 
 !some input checks
 
-if(.not.(helm .or. geocent .or.sh .or. rotate .or. potsh .or. eulerplate .or. giash .or. horsh))then
+if(.not.(helm .or. geocent .or.sh .or. rotate .or. potshdirect .or. potsh .or. eulerplate .or. giash .or. horsh))then
    write(stderr,*)'ERROR: specify either one or more of the options:'
    write(stderr,*)'   -r -s -g -t'
    write(stderr,*)'  no output'
@@ -177,7 +183,10 @@ if(geocent .and. lmin < 2)then
    lmin=2
 end if
 
-
+if(potsh .and. potshdirect)then
+   write(stderr,*)'ERROR cannot specify both -sp and -sps at the same time'
+   stop
+end if  
 
 !open file if not provided read from standard input
 if(file .ne. '')then
@@ -334,7 +343,7 @@ end if
 nunk=0
 nsh=SH_tpos(lmax,lmax,1,lmax,lmin)
 if(sh)nunk=nunk+nsh
-if(potsh)nunk=nunk+nsh
+if(potshdirect .or. potsh)nunk=nunk+nsh
 if(giash)nunk=nunk+nsh
 if(horsh)nunk=nunk+nsh
 
@@ -400,10 +409,16 @@ if(nunk > 0)then ! only create designmatrix if amount of unknowns > 0
       shift=shift+nsh
    end if
 
-   if(potsh)then
+   if(potshdirect)then
       call GPS_obseq_sh(A=A(1:3*ndat,shift+1:shift+nsh),tag=unk_d(shift+1:shift+nsh)&
            ,typ=output%side1_d,lon=lonlat(:,1),lat=lonlat(:,2),lmax=lmax,&
            lmin=lmin,ltyp=ltyp,shtyp=2,frame=frame)     
+      shift=shift+nsh
+   end if
+   if(potsh)then
+      call GPS_obseq_sh(A=A(1:3*ndat,shift+1:shift+nsh),tag=unk_d(shift+1:shift+nsh)&
+           ,typ=output%side1_d,lon=lonlat(:,1),lat=lonlat(:,2),lmax=lmax,&
+           lmin=lmin,ltyp=ltyp,shtyp=5,frame=frame)     
       shift=shift+nsh
    end if
 
@@ -537,7 +552,7 @@ output%nint=4
 allocate(output%ints(output%nint),output%ints_d(output%nint))
 output%ints_d(1)='Nobs' 
 output%ints_d(2)='Nunknowns' 
-if(sh .or. potsh )then
+if(sh .or. potshdirect )then
    output%ints_d(3)='Lmax'
    output%ints_d(4)='Lmin'
    output%ints(3)=lmax
@@ -561,7 +576,7 @@ output%readme=''
 if(sh)then
    output%readme(1)='This file holds the design matrix which enables a conversion from mass'
    output%readme(2)='loading coefficients,helmert parameters and geocenter motion to GPS '
-else if (potsh)then
+else if (potshdirect)then
    output%readme(1)='This file holds the design matrix which enables a conversion from Stokes'
 output%readme(2)='coefficients,helmert parameters and geocenter motion to GPS '
 end if
@@ -573,7 +588,7 @@ else
 end if
 if(sh)then
    output%readme(4)='Units of the normalized SH coefficients are in meters equivalent water'
-else if (potsh)then
+else if (potshdirect)then
    output%readme(4)='normalized SH coefficients are dimensionless Stokes'
 end if
 output%readme(5)='height and geocenter motion and helmert parameters are expressed in'
@@ -622,9 +637,11 @@ write(stderr,*)"      This will only set those entries to non-zero obeying the c
 write(stderr,*)"-g: create designmatrix with geocenter motion parameters"
 write(stderr,*)"-s: create designmatrix with Spherical harmonic loading coefficients"
 write(stderr,*)"-sp: create designmatrix with Spherical harmonic potential(Stokes) coefficients (load only)."
+write(stderr,*)"-sps: create designmatrix with Spherical harmonic potential(Stokes) coefficients (load + solid earth)."
 write(stderr,*)"-sg: create designmatrix with Spherical harmonic potential(Stokes) coefficients of GIA."
 write(stderr,*)"     Using the relationship of Purcell et al 2011 between potential and vertical deformation"
 write(stderr,*)"-sv: create designmatrix with Spherical harmonic Poloidal coeffients of the horizontal deformation"
+
 write(stderr,*)"-p: create designmatrix with rotation vector of rigid tectonic Euler plates"
 write(stderr,*)"    This option requires an additional column with PLATENAME as input"
 write(stderr,*)"-r: rotate cartesian coordinates to local frame system first"
