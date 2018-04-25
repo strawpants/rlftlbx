@@ -9,6 +9,7 @@
 program SH_transmat
 use shtlbx
 use binfiletools
+use FORTtime
 implicit none
 integer::i,j,itharg,narg,stderr,iargc
 integer::maxf,lmax,lmin,ind,unit
@@ -20,7 +21,9 @@ double precision,allocatable::clm(:)
 double precision::W(maxf)
 integer,allocatable::sort(:)
 integer::nw,st,nd
-
+character(24)::tag
+double precision::ctime
+type(time_t)::ctimet
 !!defaults initializations
 stderr=0
 lmax=0 !maximum degree of output rows
@@ -30,7 +33,7 @@ tagfile=''
 unit=13
 nw=0
 W=1.d0
-
+tag=""
 !!process command line options
 narg=iargc()
 if (narg <1)call help()
@@ -49,6 +52,8 @@ do,i=1,narg
          else
             tagfile=dum(4:)
          end if
+     case('t')!format time tag according to reported time in SH file
+        tag=trim(dum(4:)) 
       case('l')!limit maximum and minimum degree
          ind=index(dum,',')
          if(ind .ne. 0) then !also a min degree is specified
@@ -103,13 +108,13 @@ end if
 ncol=nf
 allocate(out%side2_d(ncol))
 out%side2_d=''
-if(tagfile .eq. '')then
+if(tagfile .eq. '' .and. tag .eq. '')then
    do,i=1,ncol
 
       write(out%side2_d(i),'(a3,i3)')'PAT',i
    end do
 
-else
+else if (tagfile .ne. '')then
    open(unit=unit,file=tagfile)
    do,i=1,nf
       read(unit=unit,fmt='(A24)',iostat=last)out%side2_d(i)
@@ -188,10 +193,16 @@ do,i=1,nrow
 end do
 
 do,i=1,nf ! Loop over files
-   call SH_readmeta(trim(shfiles(i)),ftyp,flmax)
+call SH_readmeta(filen=trim(shfiles(i)),type=ftyp,lmax=flmax,tcent=ctime)
    if(flmax<lmax)then
       write(stderr,*)"WARNING: file",trim(shfiles(i)),"only supports up to degree lmax:",flmax
       !stop
+   end if
+   !!add tiem dependent description to the column
+   if (tag .ne. "")then
+   
+    ctimet=FTime_fromDecyr(ctime)
+    call fstrftime(out%side2_d(i),tag,ctimet)
    end if
    call SH_readgrav(filen=trim(shfiles(i)),clm=clm(1:pos),slm=clm(pos+1:),type=ftyp)
    !put the values in the matrix
@@ -231,6 +242,9 @@ write(unit,frmt)"-l=LMAX,LMIN: restrict the degree range of the rows of matrix A
 write(unit,frmt)"-n=NAMEFILE: use different names from the FILE NAMEFILE (1 name per row) "
 write(unit,frmt)"-W=A1/A2/../An : apply scales to input files: number of weights must"
 write(unit,frmt)"                 match the amopunt of input files"
+write(unit,frmt)"-t=TAG Construct the column name based on the center times of the input files"
+write(unit,frmt)'               Automatic tags are supported according to C like strftime '
+write(unit,frmt)'               (http://www.cplusplus.com/reference/ctime/strftime/)'
 write(unit,frmt)"   The file must contain at least as many rows as provided patternfiles"
 write(unit,frmt)"   The order must correspond to the order of the input file"
 stop

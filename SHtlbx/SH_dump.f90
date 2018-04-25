@@ -558,7 +558,7 @@ do,i=1,narg
                itharg=itharg+1
                call getarg(itharg,outputfile)
             else
-               outputfile=trim(dum(4:))
+               outputfile=trim(dum(3:))
             end if
       case default
          call help()
