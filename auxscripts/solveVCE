@@ -2,7 +2,7 @@
 
 #author R. Rietbroek
 #Wed Feb 22 16:33:08 2012
-
+#updated 25 May 2018 (reestablish outputdirectory)
 #script to combine and solve normal systems using VCE
 
 ITER=5 #defaults to 5 iterations
@@ -23,7 +23,7 @@ usefifo=false
    echo " -S STRSTART/STREND: restrict the parameter comparison to these indices" 1>&2
    echo " -w Shut off warnings" 1>&2
    echo " -s Solve final combined system" 1>&2
-
+   echo " -O OUTDIR Put temporary outputfiles in OUTDIR directory" 1>&2
   exit 1
  }
 
@@ -31,7 +31,7 @@ usefifo=false
      help_solveVCE
  fi
 
-while getopts I:N:fAF:C:S:ws opt
+while getopts I:N:fAF:C:S:wsiO: opt
 do	case "$opt" in
 	I) ITER=$OPTARG;;
 	N) NORMFILE=$OPTARG;;
@@ -42,6 +42,7 @@ do	case "$opt" in
 	S) STR="-S='$OPTARG'";;
 	w) warn="-w";;
 	s) solve="-s";;
+	O) OUTDIR=$OPTARG;;
 	[?]) help_solveVCE;;
 	esac
 done
@@ -62,7 +63,7 @@ NF=`echo $files | awk '{print NF}'`
 
 #make the necessary amount of fifos
 #fifolist=`echo $NF | awk '{for(it=1;it<='$ITER'+1;it++){for(i=1;i<=$1;i++){printf " tmp.fifo_i%d_%03d",it,i}}}END{printf "\n"}'` 
-fifolist=`echo $NF | awk '{for(i=1;i<=$1;i++){printf " tmp.fifo_%03d",i}}END{printf "\n"}'` 
+fifolist=`echo $NF | awk '{for(i=1;i<=$1;i++){printf " '${OUTDIR}'/tmp.fifo_%03d",i}}END{printf "\n"}'` 
 
 if $usefifo ; then
     BG='&'
@@ -70,7 +71,9 @@ if $usefifo ; then
 
 fi
 
-rm -f cmdlist
+cmdlist=${OUTDIR}/cmdlist
+
+rm -f ${cmdlist}
 
 
 
@@ -80,29 +83,29 @@ IITER=1
 if [ "$fix" ] || [ "$reduce" ] || [ "$cov" ] ;
 then
     echo fixing and/or reducing
-    echo "NORM_tool $warn $reduce -Lw=test.conf $fix $cov $STR -F=tmp.fifo $files $BG" >> cmdlist
+    echo "NORM_tool $warn $reduce -Lw=test.conf $fix $cov $STR -F=${OUTDIR}/tmp.fifo $files $BG" >> ${cmdlist}
     files=$fifolist
     # files=`echo $NF | awk '{for(i=1;i<=$1;i++){printf " tmp.fifo_i%d_%03d",'$IITER',i}}END{printf "\n"}'` 
     # IITER=$(($IITER+1))
 fi
 
 
-echo "NORM_tool $warn -V -Vp -v -s -F=tmp.fifo $STR -cf $files $BG" >> cmdlist
+echo "NORM_tool $warn -V -Vp -v -s -F=${OUTDIR}/tmp.fifo $STR -cf $files $BG" >> ${cmdlist}
 
 # fifol=`echo $NF | awk '{for(i=1;i<=$1;i++){printf " tmp.fifo_i%d_%03d",'$IITER',i}}END{printf "\n"}'` 
 # IITER=$(($IITER+1))
 
 for i in `seq 1 $((ITER-1))`
 do
-    echo "NORM_tool $warn -V -Vp -v -s -F=tmp.fifo $STR -cf $fifolist $BG" >> cmdlist
+    echo "NORM_tool $warn -V -Vp -v -s -F=${OUTDIR}/tmp.fifo $STR -cf $fifolist $BG" >> ${cmdlist}
     # fifol=`echo $NF | awk '{for(i=1;i<=$1;i++){printf " tmp.fifo_i%d_%03d",'$IITER',i}}END{printf "\n"}'`
     # IITER=$(($IITER+1))
 done
 
 #final call combine systems
-echo "NORM_tool $solve $warn -F=$NORMFILE $STR -v -cf $fifolist" >> cmdlist
+echo "NORM_tool $solve $warn -F=$NORMFILE $STR -v -cf $fifolist" >> ${cmdlist}
 
-cat cmdlist | bash | grep 'VCE,' | tee VCEscales.txt
+cat ${cmdlist} | bash | grep 'VCE,' | tee ${OUTDIR}/VCEscales.txt
 
 
-rm -f $fifolist cmdlist
+rm -f $fifolist ${cmdlist}
