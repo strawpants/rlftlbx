@@ -6,7 +6,7 @@
 #script to combine and solve normal systems using VCE
 
 ITER=5 #defaults to 5 iterations
-NORMFILE=VCE.norm # default normal system output file
+OUTDIR='.'
 usefifo=false
 
  help_solveVCE()
@@ -15,7 +15,7 @@ usefifo=false
    echo " Usage: solveVCE [OPTIONS] FILES" 1>&2
    echo " OPTIONS are:" 1>&2
    echo " -I N: use N iterations (default is 5)" 1>&2
-   echo " -N NORMFILE: write the final combination normal systemn to NORMFILE (default VCE.norm)"  1>&2
+   echo " -N NORMFILE: write the final combination normal systemn to NORMFILE (default OUTDIR/VCE.norm)"  1>&2
    echo " -f: use fifos for intermediate files"  1>&2
    echo " -A: Autoreduce variables unique to one system" 1>&2
    echo " -F FIXREGEX First fix variables obeying regular expression" 1>&2
@@ -46,6 +46,12 @@ do	case "$opt" in
 	[?]) help_solveVCE;;
 	esac
 done
+
+if [ ! $NORMFILE ]
+then
+    NORMFILE=${OUTDIR}/VCE.norm
+fi
+
 
 if [ $ITER -lt 2 ]; then
     echo "at least 2 iterations are needed" 1>&2
@@ -83,7 +89,7 @@ IITER=1
 if [ "$fix" ] || [ "$reduce" ] || [ "$cov" ] ;
 then
     echo fixing and/or reducing
-    echo "NORM_tool $warn $reduce -Lw=test.conf $fix $cov $STR -F=${OUTDIR}/tmp.fifo $files $BG" >> ${cmdlist}
+    echo "NORM_tool $warn $reduce -Lw=${OUTDIR}/test.conf $fix $cov $STR -F=${OUTDIR}/tmp.fifo $files $BG" >> ${cmdlist}
     files=$fifolist
     # files=`echo $NF | awk '{for(i=1;i<=$1;i++){printf " tmp.fifo_i%d_%03d",'$IITER',i}}END{printf "\n"}'` 
     # IITER=$(($IITER+1))
@@ -107,5 +113,6 @@ echo "NORM_tool $solve $warn -F=$NORMFILE $STR -v -cf $fifolist" >> ${cmdlist}
 
 cat ${cmdlist} | bash | grep 'VCE,' | tee ${OUTDIR}/VCEscales.txt
 
-
+#mv temporary CONTR_* files
+mv CONTR_* ${OUTDIR}
 rm -f $fifolist ${cmdlist}
