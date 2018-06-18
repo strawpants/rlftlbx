@@ -810,10 +810,10 @@ call SH_readgrav(filen=trim(subtfile(i)),clm=clm_subt,slm=slm_subt)
 !and if not don't subtract those (set them to zero in slm_subt)
 
 
-if(abs(clm(1)) < 1.d-100)clm_subt(1)=0.d0
-if(abs(clm(2)) < 1.d-100)clm_subt(2)=0.d0
-if(abs(clm(3)) < 1.d-100)clm_subt(3)=0.d0
-if(abs(slm(3)) < 1.d-100)slm_subt(3)=0.d0
+!if(abs(clm(1)) < 1.d-100)clm_subt(1)=0.d0
+!if(abs(clm(2)) < 1.d-100)clm_subt(2)=0.d0
+!if(abs(clm(3)) < 1.d-100)clm_subt(3)=0.d0
+!if(abs(slm(3)) < 1.d-100)slm_subt(3)=0.d0
 !subtract
 clm=clm-clm_subt
 slm=slm-slm_subt
