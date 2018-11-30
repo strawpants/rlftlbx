@@ -102,7 +102,8 @@ double precision,intent(in)::time(:) ! time in mjd
 double precision,intent(out)::m1(:),m2(:),lod(:) !output in radians
 double precision,target::xpoly0(4),xpoly1(2)
 double precision,target::ypoly0(4),ypoly1(2)
-double precision, pointer::xpoly(:),ypoly(:)
+double precision, pointer::xpoly(:)=>null()
+double precision, pointer::ypoly(:)=>null()
 logical,optional::subtractmeaniers
 double precision::t0,ts,xm,ym,tt,mm1,mm2,wg,d2r
 integer::n0,n1,n,stderr,i,j,k

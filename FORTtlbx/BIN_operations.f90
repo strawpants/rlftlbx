@@ -116,7 +116,7 @@ double precision,optional,intent(in)::idbl
 character(50)::strbefore,strafter,strtmp
 character(500)::dum2
 integer::last,unit
-character(24),pointer::side(:)
+character(24),pointer::side(:)=>null()
 integer::sz
 stderr=0
 last=0
@@ -336,8 +336,8 @@ logical::iboth,idry
 integer::nrows,ncols,stderr
 integer::i,j,k,sz,st,mxsz,err
 integer*8::packind,shft
-double precision,pointer::tmp(:,:)
-integer,pointer::iperm1(:)
+double precision,pointer::tmp(:,:)=>null()
+integer,pointer::iperm1(:)=>null()
 nrows=input%nval1
 ncols=input%nval2
 

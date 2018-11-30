@@ -43,8 +43,15 @@ logical::helm,geocent,sh,rotate,cartesian
 double precision::deg2rad,dumdbl(3)
 double precision,allocatable,target::A(:,:)
 double precision,allocatable,target::lonlat(:,:)
-double precision,pointer,dimension(:)::lon,lat,height,x,y,z
-character(24),pointer::dat_d(:),plate(:),plate3(:)
+double precision,pointer,dimension(:)::lon=>null()
+double precision,pointer,dimension(:)::lat=>null()
+double precision,pointer,dimension(:)::height=>null()
+double precision,pointer,dimension(:)::x=>null()
+double precision,pointer,dimension(:)::y=>null()
+double precision,pointer,dimension(:)::z=>null()
+character(24),pointer::dat_d(:)=>null()
+character(24),pointer::plate(:)=>null()
+character(24),pointer::plate3(:)=>null()
 character(24),target,allocatable::unk_d(:)
 logical::platecol,eulerplate,potshdirect
 integer::shft1,shftp,k,j

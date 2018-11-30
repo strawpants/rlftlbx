@@ -31,7 +31,9 @@ integer::chunk
 integer::ndat
 integer::memsize
 double precision::dumd(4)
-double precision,pointer::lon(:),lat(:),z(:)
+double precision,pointer::lon(:)=>null()
+double precision,pointer::lat(:)=>null()
+double precision,pointer::z(:)=>null()
 double precision::d2r
 double precision::latold,thres
 double precision:: Cosm,Sinm

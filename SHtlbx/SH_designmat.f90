@@ -33,8 +33,9 @@ double precision::dres,lonmin,lonmax,latmin,latmax
 logical::equigrid
 double precision,allocatable::trivec(:,:,:)
 double precision,allocatable::p(:)
-double precision,pointer::tmp(:,:)
-double precision,pointer::lon(:),lat(:)
+double precision,pointer::tmp(:,:)=>null()
+double precision,pointer::lon(:)=>null()
+double precision,pointer::lat(:)=>null()
 integer,allocatable::deg(:),ord(:),tri(:)
 type(BINdat)::out,trans
 integer::iargc,unit,chunk,mem_sz,last,rows,ipos

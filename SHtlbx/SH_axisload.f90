@@ -31,7 +31,8 @@ program SH_axisload
   character(200)::dum
   integer::iargc,loadtype,stdout
   logical::iso
-  double precision,pointer,dimension(:)::lonv,latv
+  double precision,pointer,dimension(:)::lonv=>null()
+  double precision,pointer,dimension(:)::latv=>null()
   integer::np,last,unit,mem,chunk,p
 
   !defaults

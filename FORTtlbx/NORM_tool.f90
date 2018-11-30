@@ -144,7 +144,11 @@ logical::haltafterlearn,unique,apri_ascii
 character(20)::version
 integer,dimension(nmax)::comb,ndat,ndat2,nfix,nfixold,nred,validsys
 integer::indpara,col,row,clorig,rworig,napri,nreg,shift,nfout
-double precision,pointer,dimension(:,:)::upper,lower,P1,P2,P3
+double precision,pointer,dimension(:,:)::upper=>null()
+double precision,pointer,dimension(:,:)::lower=>null()
+double precision,pointer,dimension(:,:)::P1=>null()
+double precision,pointer,dimension(:,:)::P2=>null()
+double precision,pointer,dimension(:,:)::P3=>null()
 double precision,dimension(nmax)::W
 double precision::regscale,trace
 character(24),allocatable::unknowns(:)
@@ -166,11 +170,11 @@ double precision,allocatable::tmpvec1(:),tmpvec2(:)
  !type normalsystem
 type normsys
 !!   double precision,pointer::norm(:,:) !removed to prevent dangling pointers
-   double precision,pointer::Atb(:) 
-   double precision,pointer::Atbold(:)
-   double precision,pointer::Apri(:)
-   double precision,pointer::Apriold(:)
-   double precision,pointer::contr(:)
+   double precision,pointer::Atb(:)=>null() 
+   double precision,pointer::Atbold(:)=>null() 
+   double precision,pointer::Apri(:)=>null() 
+   double precision,pointer::Apriold(:)=>null() 
+   double precision,pointer::contr(:)=>null() 
    double precision::ltpl,sig0,vce,Stime,Ctime,Etime,ltplold
    integer*8::nobs,nobsold,nred,nfix
 
@@ -184,7 +188,8 @@ logical::diagtrans,covscale,trans,Btrans,symtrans,warned,N_ignore,atb_ignore,x0_
 character(200)::tr_file
 double precision,dimension(nmax)::cv_sc
 double precision,allocatable::B(:,:)
-character(24),pointer::transide1(:),transide2(:)
+character(24),pointer::transide1(:)=>null()
+character(24),pointer::transide2(:)=>null()
 integer,allocatable::transort1(:),transort2(:)
 integer::tnval1,tnval2,info
 integer::ntimings ! parameters to do timing (maximum of 20 timings)

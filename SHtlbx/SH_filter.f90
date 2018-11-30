@@ -58,7 +58,7 @@ integer,allocatable,dimension(:)::pos,ints
 character(400)::dum,ref_sh
 character(20)::app
 character(1)::trig
-Character(400),pointer,dimension(:)::SHfiles
+Character(400),pointer,dimension(:)::SHfiles=>null()
 logical::stdin,stdout,limdeg,error,blck,sym,replsuf
 double precision,allocatable,dimension(:,:)::tmp,tmp_sig,SH,time,blocktmp
 double precision,allocatable,dimension(:)::ref_field

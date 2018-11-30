@@ -32,7 +32,7 @@ end type GroopsMAT
 
 type GroopsXML
 integer::unit=15
-character(200),pointer::buffer(:)
+character(200),pointer::buffer(:)=>null()
 character(200)::file
 end type GroopsXML
 

@@ -63,7 +63,12 @@ type(BINdat)::work(maxf),out !space for at most maxf data structures (Plus an ou
 logical::trans1,trans2,both2,both1,file2ascii
 character(50)::version
 double precision::W(maxf)
-character(24),pointer::rows1(:),rows2(:),cols1(:),cols2(:),tmpcols2(:)
+character(24),pointer::rows1(:)=>null()
+character(24),pointer::rows2(:)=>null()
+character(24),pointer::cols1(:)=>null()
+character(24),pointer::cols2(:)=>null()
+character(24),pointer::tmpcols2(:)=>null()
+
 integer,allocatable::sys2_perm1(:),sys2_perm2(:),sys1_perm1(:),sys1_perm2(:)
 double precision,allocatable::workv(:),workm(:,:)
 character(1)::uplo1,uplo2

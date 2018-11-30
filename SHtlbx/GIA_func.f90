@@ -41,7 +41,7 @@ type(SHsynth_struct),intent(inout)::SHS
 integer::nsh,i,j,l,m,k,pos
 double precision,allocatable::mask(:,:),ocetmp(:,:,:)
 double precision,allocatable,dimension(:)::clmtmp,slmtmp
-double precision,pointer,dimension(:,:)::tmpgrd
+double precision,pointer,dimension(:,:)::tmpgrd=>null()
 logical::fex
 integer::stderr,ind,lmaxdum,nt
 integer,allocatable,dimension(:)::deg,ord,tri,iclm,islm

@@ -41,7 +41,7 @@ parameter(maxfiles=300,stderr=0)
 logical::stdin,limdeg,exi,error,smooth
 character(200)::dum,lonlatfile
 ! character(len=200),dimension(maxfiles)::infiles
-character(len=200),pointer::infiles(:)
+character(len=200),pointer::infiles(:)=>null()
 double precision::lon,lat
 double precision::tcentdum,radius
 double precision,allocatable,dimension(:)::dp,p,tcent,Yc,Ys
@@ -49,7 +49,8 @@ double precision, allocatable,dimension(:,:)::clm,slm,slm_sig,clm_sig
 integer::iargc
 logical::east,north,grad,plain
 double precision,allocatable,dimension(:,:,:)::out
-double precision,pointer,dimension(:)::lonv,latv
+double precision,pointer,dimension(:)::lonv=>null()
+double precision,pointer,dimension(:)::latv=>null()
 integer::noutcol,shft,nouterr
 integer::npoints !!amount of lon lat points 
 integer::unit

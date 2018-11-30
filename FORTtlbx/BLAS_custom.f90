@@ -23,7 +23,6 @@ double precision,intent(in),dimension(:)::mpack
 double precision,intent(in),dimension(:,:)::mat
 double precision,dimension(:,:)::packmul2d(size(mat,1),size(mat,2))
 double precision::dumsq(size(mat,1),size(mat,1))
-!double precision,pointer,dimension(:,:)::matp,packmulp
 integer::row,col,ind,m,n
 !get dimension sizes and perform a check
 m=size(mat,1)

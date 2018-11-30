@@ -54,7 +54,7 @@ integer::l,m,ldc,k
 logical::stdin,limdeg,sissy,exi,error,translate
 character(200)::dum,fileout,hist
 ! character(len=200),dimension(maxfiles)::infiles
-character(len=200),pointer::infiles(:)
+character(len=200),pointer::infiles(:)=>null()
 double precision::dgrd,lonmin,lonmax,latmax,latmin,mem,colat,time,time2,tcentdum,Tlon,Tlat
 double precision,allocatable,dimension(:)::lat,lon,p,tcent,dp
 double precision, allocatable,dimension(:,:)::clm,slm,Cvec,Svec,slm_sig,clm_sig,tmp1

@@ -9,10 +9,10 @@ module AutoRegressive
 
   type ARmodel
      integer::ord,ndat
-     double precision,pointer::Para(:)
+     double precision,pointer::Para(:)=>null()
      double precision::sig2
      !autocovariance matrix in banded form
-     double precision,pointer::autocovBD(:,:)
+     double precision,pointer::autocovBD(:,:)=>null()
   end type ARmodel
 contains
   !compute an autoregressive model from a series
@@ -81,7 +81,8 @@ contains
   !function returning an banded symetric lower triangular toeplitz matrix in lapack/blas format
   subroutine makeautoCovBD(Ar)
     type(Armodel),intent(inout)::Ar
-    double precision,pointer::autocorr(:),autocorrUpdate(:)
+    double precision,pointer::autocorr(:)=>null()
+    double precision,pointer::autocorrUpdate(:)=>null()
     integer::i,j,iter, maxiter
     double precision::denom,gam,corrdif,thres
 

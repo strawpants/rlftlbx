@@ -36,7 +36,8 @@ integer::nunk,nobs,s_st,s_end,st,nd,n2
 double precision::ltpl,cov_scale
 integer,allocatable::perm1(:),perm2(:)
 logical::trans,reuse,verbose
-character(24),pointer,dimension(:)::side1,side2
+character(24),pointer,dimension(:)::side1=>null()
+character(24),pointer,dimension(:)::side2=>null()
 integer::info,datcol
 
 !defaults/ initializations

@@ -20,7 +20,7 @@ type(BINdat)::out
 integer::nmxcol,ncol,chunk,mem,stderr
 parameter(nmxcol=2000,chunk=100000,stderr=0)
 double precision::dummies(nmxcol)
-double precision,pointer::work(:) ! to read data into
+double precision,pointer::work(:)=>null() ! to read data into
 integer::unit,last,ndat
 character(200)::infile
 character(30000)::dum

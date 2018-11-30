@@ -28,12 +28,15 @@ type(geogrid)::topo
 logical::rotfeedback,verbose
 integer::iargc,ncid,nt,l,m,numFR
 double precision::dt,tmin,tmax,h1dum,k1dum,l1dum
-double precision,pointer::lon(:),lat(:)
+double precision,pointer::lon(:)=>null()
+double precision,pointer::lat(:)=>null()
 double precision,allocatable,dimension(:,:)::Ice,QSea,dIce,dSea,dQsea,dU,dV,dN
 double precision,allocatable,dimension(:,:)::hn,ln,kn
-double precision,pointer,dimension(:,:)::Oce
+double precision,pointer,dimension(:,:)::Oce=>null()
 double precision,allocatable,dimension(:)::timeload,time,dtime
-double precision,pointer::icef(:,:),lovef(:,:)
+double precision,pointer::icef(:,:)=>null()
+
+lovef(:,:)
 double precision,allocatable,dimension(:)::clmdum,slmdum
 integer,allocatable,dimension(:)::deg,ord,trig
 integer::nsh,nshoce,nlat,nlon,trigdum,ind

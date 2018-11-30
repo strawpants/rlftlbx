@@ -98,7 +98,7 @@ logical::binary,ascii,dryrun
 !defaults initializations
 character(200)::parse ! parse string defining the info which is printed to screen
 character(504)::dum
-character(500),pointer::metastr(:)
+character(500),pointer::metastr(:)=> null()
 character(6)::dum2
 integer::iargc
 integer::st1,st2,nd1,nd2,mn
@@ -106,7 +106,7 @@ integer::reg_inc1,reg_inc2 !regular expression ids
 integer,allocatable::perm1(:),perm2(:)
 logical::expand,matpermute,excl1,excl2,match
 double precision::matscale,vecscale
-character(24),pointer::restrict(:)
+character(24),pointer::restrict(:) => null()
 integer:: nrestr
 double precision::tmp
 integer,allocatable::keep1(:),keep2(:)
@@ -116,7 +116,9 @@ integer::stdout
 integer::unit,nsort,last,memsz,ncom,chunk
 parameter(chunk=100)
 logical::sort1,sort2
-character(24),pointer::sort_d(:),tmpvec_d(:),newside_d(:)
+character(24),pointer::sort_d(:) => null()
+character(24),pointer::tmpvec_d(:) => null()
+character(24),pointer::newside_d(:) => null()
 character(200)::sort1f,sort2f
 integer,allocatable,dimension(:)::tmpperm1,tmpperm2
 character(8)::outtype

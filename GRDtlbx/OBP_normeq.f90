@@ -31,12 +31,14 @@ integer::nsh,nunk,nchunks,ndat,datsz,datst,datnd,shift,strlen,unit,eof
 parameter(stderr=0)
 logical::geocent,globalmean,sh,reject,equiref
 character(20)::chargpswk
-character(24),pointer::Unlist(:)
+character(24),pointer::Unlist(:)=>null()
 character(200)::dum,outfile,resfile,rejectfile,errfile
 integer::count
 double precision::db2eqw,sigma0,alpha,ltpl,latreject,lonreject
 double precision,allocatable::A(:,:)
-double precision,pointer::AtA(:,:),Ab(:),apriori(:)
+double precision,pointer::AtA(:,:)=>null()
+double precision,pointer::ab(:)=>null()
+double precision,pointer::apriori(:)=>null()
 double precision,allocatable::lat(:),lon(:),obp(:)
 integer,allocatable::selector(:)
 logical::cosscale,diagcov,usenorm

@@ -27,7 +27,7 @@ logical::expand,match
 logical::limdeg
 type(BINdat)::indat !matrix system
 integer,allocatable::permvec(:)
-double precision,pointer:: pack1(:)
+double precision,pointer:: pack1(:)=>null()
 integer::st,nd
 
 !!defaults

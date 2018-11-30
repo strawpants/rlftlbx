@@ -103,7 +103,7 @@ type  PSMSL_stat
      type(PSMSL_struc),target,intent(inout)::psmsl
      integer,intent(in)::pos !specify the position of the station in the list
      logical,intent(in)::readdoc
-     type(PSMSL_stat),pointer::stat ! pointer for readability
+     type(PSMSL_stat),pointer::stat=>null() ! pointer for readability
 
      character(200)::file
      integer::unit,last,chunk,mem

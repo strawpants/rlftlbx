@@ -28,7 +28,7 @@ character(200)::dum
 integer::iargc,narg,itharg
 integer::regind,ind,indo
 type(PSMSL_struc),target::dat
-type(PSMSL_stat),pointer::stat ! used for shortcutting
+type(PSMSL_stat),pointer::stat=>null() ! used for shortcutting
 integer::stderr,stdout,nstat,i,j,k,iyr,rec
 double precision::lonmin,lonmax,latmin,latmax
 double precision::lons
@@ -38,7 +38,8 @@ integer::gaplen,ngaps
 integer::st,nd,nmatch
 character(30)::frmt
 integer::quitafter
-integer,pointer,dimension(:)::tmp,tmp2
+integer,pointer,dimension(:)::tmp=>null()
+integer,pointer,dimension(:)::tmp2=>null()
 character(200)::rootdir
 integer,allocatable::valid(:)
 logical::t_restr,g_restr

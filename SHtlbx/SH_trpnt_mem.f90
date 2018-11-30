@@ -18,7 +18,7 @@ module SH_trpnt
      double precision,pointer::scale3b(:,:)=>null()
      !array with precomputed degree dependent scales
 !     type(degvec),allocatable::degarr(:)
-     type(degvec),pointer::degarr(:)
+     type(degvec),pointer::degarr(:)=>null()
      
   end type trpnt_memstruct
   
@@ -120,7 +120,7 @@ contains
     double precision,intent(out)::veca(:),vecb(:)
     integer,intent(in)::l1,l2,m1,m2
     integer,intent(out)::m3a,m3b,lmin3a,lmin3b,lmax3a,lmax3b
-    double precision,pointer::degvec(:)
+    double precision,pointer::degvec(:)=>null()
     double precision::ordsca,ordscb
 !    double precision::wign3a(l1+l2+1),wign3b(l1+l2+1)
     integer::l,ind

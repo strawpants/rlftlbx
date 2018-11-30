@@ -24,7 +24,7 @@ implicit none
 double precision,pointer::in(:)
 integer,intent(in)::nadd
 
-double precision,pointer::tmp(:)
+double precision,pointer::tmp(:)=>null()
 integer*8::n
 n=0
 
@@ -55,7 +55,7 @@ implicit none
 double precision,pointer::in(:,:)
 integer,intent(in)::xadd,yadd
 
-double precision,pointer::tmp(:,:)
+double precision,pointer::tmp(:,:)=> null()
 integer*8::nx,ny
 nx=0
 ny=0
@@ -83,9 +83,10 @@ end subroutine reallocate_dptrm
 !subroutine to reallocate a 1D pointer (character vector) ( and copy data)
 subroutine reallocate_cptr(in,nadd)
 implicit none
-character(*),pointer::in(:)
+character(*),pointer,intent(inout)::in(:)
 integer,intent(in)::nadd
 
+!character(*),pointer::tmp(:)=> null()
 character(len(in(1))),pointer::tmp(:)
 integer*8::n
 
@@ -119,7 +120,7 @@ implicit none
 integer,pointer::in(:)
 integer,intent(in)::nadd
 
-integer,pointer::tmp(:)
+integer,pointer::tmp(:) => null()
 integer*8::n
 n=0
 if(associated(in))then
@@ -148,7 +149,7 @@ implicit none
 integer*8,pointer::in(:)
 integer,intent(in)::nadd
 
-integer*8,pointer::tmp(:)
+integer*8,pointer::tmp(:) => null()
 integer*8::n
 n=0
 if(associated(in))then

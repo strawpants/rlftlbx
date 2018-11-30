@@ -22,7 +22,7 @@ endif (NOT CMAKE_BUILD_TYPE)
 
 #basic compiler flags
 set(CMAKE_Fortran_FLAGS_RELEASE "-march=native -O3")
-set(CMAKE_Fortran_FLAGS_DEBUG "-march=native -O3 -g") 
+set(CMAKE_Fortran_FLAGS_DEBUG "-march=native -O3 -g -fdump-core -fbacktrace") 
 
 ##add some flags and libraries when using openmp
 if( ${USE_OPENMP} )
@@ -81,7 +81,7 @@ find_package(SHTOOLS REQUIRED )
 #find the fftw3 libarary
 find_package(FFTW3 REQUIRED )
 
-include_directories(${SHTOOLS_MODPATH} ${NETCDF_INCLUDE_DIRS})
+include_directories( ${CMAKE_Fortran_MODULE_DIRECTORY} ${SHTOOLS_MODPATH} ${NETCDF_INCLUDE_DIRS})
 link_directories(${OPTBLAS_LIBPATH})
 
 
