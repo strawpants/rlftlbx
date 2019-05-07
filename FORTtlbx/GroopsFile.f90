@@ -205,10 +205,10 @@ end if
 call readString(Gfile%cunit,Gfile%type)
 call readString(Gfile%cunit,Gfile%version)
 
-if(Gfile%version(1:3) .ne. '1.1')then
-    write(stderr,*)"ERROR no support for version 1.1"
-    stop  
-end if
+! if(Gfile%version(1:3) .ne. '1.1')then
+!    write(stderr,*)"ERROR no support for version 1.1"
+!    stop  
+! end if
 
 !read remainder up to 64 bits
 call cread(Gfile%cunit,modulo(1+len_trim(Gfile%version)+len_trim(Gfile%type)-2,8),dummy)
