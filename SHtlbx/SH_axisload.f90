@@ -28,17 +28,20 @@ program SH_axisload
   integer::lmax,lmin,itharg,narg,m,l,i,ind,stderr,pos
   double precision,allocatable,dimension(:)::clm,slm,plm,degnorm,degscale,Pl
   double precision::lon,lat,deg2rad,silonm,colonm,psi
-  character(200)::dum
+  character(200)::dum,lonlatwfile
   integer::iargc,loadtype,stdout
-  logical::iso
+  logical::iso,weight
   double precision,pointer,dimension(:)::lonv=>null()
   double precision,pointer,dimension(:)::latv=>null()
-  integer::np,last,unit,mem,chunk,p
-
+  double precision,pointer,dimension(:)::normw=>null()
+  double precision::work(3)
+  integer::np,last,unit,mem,chunk,p,ncol
+  double precision::normscale
   !defaults
   np=1 ! default is 1 point
   chunk=1000
-  unit=13
+  !unit=13
+  unit=5 !standard input
   stderr=0
   deg2rad=pi/180.d0
   lmin=0
@@ -49,7 +52,9 @@ program SH_axisload
   loadtype=0 !no load type specified
   iso=.false.
   stdout=6
-
+  weight=.false.
+  lonlatwfile=''
+  ncol=2
   !!process command line options
   narg=iargc()
   if(narg<1)call help()
@@ -77,26 +82,7 @@ program SH_axisload
            lonv(1)=lon
            latv(1)=lat
         case('p:') ! several lonlat points contained in a file
-           np=0
-           last=0
-           mem=0
-           open(unit=unit,file=dum(4:),form='formatted')
-           
-           do while(last .eq. 0)
-              read(unit=unit,iostat=last,fmt=*)lon,lat
-              if(last .ne. 0) exit
-              np=np+1
-              if(mem < np)then ! we need to reallocate data ( per chunk)
-                 call realloc_ptr(lonv,chunk)
-                 call realloc_ptr(latv,chunk)
-                 mem=mem+chunk
-              end if
-              lonv(np)=lon
-              latv(np)=lat
-           end do
-
-           close(unit)
-           
+           lonlatwfile=dum(4:)
         case('u')!unit load
            loadtype=1 !although it is the default
         case('da')!diskload with radius in angle (degrees)
@@ -126,6 +112,9 @@ program SH_axisload
            psi=acos(1-psi/(2*pi*(RE/1000.d0)**2)) !calculate angle in radians from radius in km
         case('i')!isotropic output
            iso=.true.
+        case('w')
+            weight=.true.
+            ncol=3
         case('h')
            call help()
         case default
@@ -136,7 +125,62 @@ program SH_axisload
         
      end if
   end do
+
+
+! read lonlat points from a textfile
+if (.not. associated(lonv) .and. lonlatwfile .ne. '')then
   
+  if (lonlatwfile .ne. 'stdin')then
+    unit=13
+    open(unit=unit,file=lonlatwfile,form='formatted')
+  end if
+    !try reading first line to find out whether data has enough columns
+  read(unit=unit,fmt=*,iostat=last)work(1:ncol)
+
+  if( last < 0)then
+     write(stderr,*)"ERROR: not enough columns"
+     stop
+  else if(last > 0)then
+     write(stderr,*)"ERROR: format error"
+     stop
+  end if
+  call realloc_ptr(lonv,chunk)
+  call realloc_ptr(latv,chunk)
+  if(weight)then
+    call realloc_ptr(normw,chunk)
+  end if
+  mem=chunk
+  np=1
+  lonv(np)=work(1)
+  latv(np)=work(2)
+  if(weight)normw(np)=work(3)
+
+  do while (last .eq. 0)
+     np=np+1
+     if(np > mem)then !reallocate arrays ( add a chunk) (& copy data)
+        call realloc_ptr(lonv,chunk)
+        call realloc_ptr(latv,chunk)
+        if(weight)call realloc_ptr(normw,chunk)
+        mem=mem+chunk
+     end if
+
+     read(unit=unit,fmt=*,iostat=last)work(1:ncol)
+     if( last .ne. 0)then
+        np=np-1
+        exit ! exit on end of file
+     end if
+     !put data in arrays
+     lonv(np)=work(1)
+     latv(np)=work(2)
+     if(weight)normw(np)=work(3)
+  end do
+  close(unit)
+  
+end if
+
+
+
+
 if(.not. iso .and. .not. associated(lonv))then
    write(stderr,*)"ERROR: -p option must be specified"
    stop
@@ -201,18 +245,22 @@ pos=SH_pos(lmax,lmax)
 allocate(clm(pos),slm(pos),plm(pos))
 clm=0.d0
 slm=0.d0
+!default scale is 1 (will bechanged when a weighted summation is requested(
+normscale=1.d0
 
 do,p=1,np ! loop over all points
 
    lat=latv(p)
    lon=lonv(p)
-
+  if (weight)then
+    normscale=normw(p)
+  end if
    !calculate associated Legendre functions
    call Plmbar(plm,lmax,sin(lat*deg2rad))
    !zero order
    do,l=max(0,lmin),lmax
       pos=SH_pos(l,0)
-      clm(pos)=clm(pos)+plm(pos)*degscale(l)/degnorm(l)
+      clm(pos)=clm(pos)+normscale*plm(pos)*degscale(l)/degnorm(l)
    end do
 !orders > 0
    do,m=1,lmax
@@ -221,8 +269,8 @@ do,p=1,np ! loop over all points
       !     if(m==90)write(0,'(2F21.18)')pi,atan2(1.d0,1.d0)*4-acos(0.d0)*2
       do,l=max(m,lmin),lmax
          pos=SH_pos(l,m)
-         clm(pos)=clm(pos)+colonm*plm(pos)*degscale(l)/degnorm(l)
-         slm(pos)=slm(pos)+silonm*plm(pos)*degscale(l)/degnorm(l)
+         clm(pos)=clm(pos)+normscale*colonm*plm(pos)*degscale(l)/degnorm(l)
+         slm(pos)=slm(pos)+normscale*silonm*plm(pos)*degscale(l)/degnorm(l)
       end do
    end do
 end do ! end loop over points
@@ -244,7 +292,7 @@ subroutine help()
   write(unit,frmt)" -l=lmax[,lmin] : specify maximum and optionally minimum degree (default 200,0)"
   write(unit,frmt)" -p=lon,lat: Specify location of the load function in degrees longitude and latitude"
   write(unit,frmt)" -p:LONLATFILE: Same as above but several lonlat combinations are read from the file and their"
- write(unit,frmt)"   contribution is summed"
+ write(unit,frmt)"   contribution is summed. specify 'stdin' to read from standard input"
   write(unit,frmt)" -u: Unit load"
   write(unit,frmt)" -d[asr]=WIDTH: Uniform disk load (spherical cap) "
   write(unit,frmt)"   -da=WIDTH: WIDTH represents radius angle in degrees"
@@ -257,6 +305,8 @@ subroutine help()
   write(unit,frmt)"   -cs=WIDTH: WIDTH represents surface area in km^2 (on the surface of the Earth)"
   write(unit,frmt)""
   write(unit,frmt)" -i: output isotropic part only (-p option is ignored) degree and value"
+  write(unit,frmt)" -w: Apply a weight to each of the input coordinates."
+  write(unit,frmt)"     This requires that the input file from -p: has a third weight column"
   write(unit,frmt)"Program prints to standard output"
 !   write(unit,frmt)""
 !   write(unit,frmt)""
