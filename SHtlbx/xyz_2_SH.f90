@@ -37,7 +37,8 @@ double precision,pointer::z(:)=>null()
 double precision::d2r
 double precision::latold,thres
 double precision:: Cosm,Sinm
-integer::otyp,ind,npos
+double precision::tstart,tcent,tend
+integer::otyp,ind,ind2,npos
 integer,allocatable::perm(:)
 double precision,allocatable,dimension(:)::clm,slm,p,clmtmp,slmtmp
 double precision::lontmp,lattmp,ztmp
@@ -61,6 +62,9 @@ otyp=4
 verbose=.false.
 weight=.false.
 ncol=3
+tstart=0.d0
+tcent=0.d0
+tend=0.d0
 
 !!process command line options
 narg=iargc()
@@ -91,6 +95,12 @@ do,i=1,narg
       case('w')
          weight=.true.
          ncol=4
+      case('T')!specify times explicitly
+         ind=index(dum,',')
+         ind2=index(dum(ind+1:),',')+ind
+         read(dum(3:ind-1),*)tstart
+         read(dum(ind+1:ind2-1),*)tcent
+         read(dum(ind2+1:),*)tend
       case default
          write(stderr,*)'ERROR: unknown option selected:',dum(1:2)
          stop
@@ -201,7 +211,7 @@ deallocate(p,slmtmp,clmtmp)
 !$OMP END PARALLEL
 
 !write goodies to standard output
-call SH_write(clm=clm,slm=slm,typ=otyp)
+call SH_write(clm=clm,slm=slm,typ=otyp,tstart=tstart,tcent=tcent,tend=tend)
 
 
 
@@ -228,6 +238,8 @@ subroutine help()
   write(stderr,*)'-sTHRES : Sort data according to latitude and set threshold for the latitude change (in degree) for which'
   write(stderr,*)'          a new associated Legendre function should be calculated' 
   write(stderr,*)'-w: Weighing: a 4th column contains the weights of the measurements, weights must be in steradian '
+  write(stderr,*)'-TTSTART,TCENTER,TEND: explicitly specify timetags for file output, TSTART,TCENTER,TEND'
+  write(stderr,*)'                       in decimal years'
   write(stderr,*)'-v: be verbose'
 !$ write(stderr,*)'This version is compiled with OpenMP and allows multi-threading (please set the OMP_NUM_THREADS env.variable)'
 write(stderr,*)"See also nc_2_SH for quick FFT methods on equidistant grids"
