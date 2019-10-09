@@ -422,7 +422,7 @@ do,i=1,nlat !first do the loop over latitude(to avoid computing too many legendr
    
    if(north)then
       !calculate derivative of associated Legendre function 
-      call PlmBar_d1(p=p,dp=dp,lmax=lmax,z=sin(lat(i)*pi/180.d0))
+      call PlmBar_d1(p=p,dp1=dp,lmax=lmax,z=sin(lat(i)*pi/180.d0))
       !replace p with dp and apply Chain rule ( derivative wrt negative colatitude)
       p=dp*cos(lat(i)*pi/180.d0)
    else

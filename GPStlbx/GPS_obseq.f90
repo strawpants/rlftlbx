@@ -202,7 +202,7 @@ do,i=1,ndat
      ! write(*,*)pos,size(p),size(dp),lmax
 !      call PlmBar_d1(p=p,dp=dp,lmax=lmax,z=cos(pi/2-latold))
 
-      call PlmBar_d1(p=p,dp=dp,lmax=lmax,z=sin(latold))
+      call PlmBar_d1(p=p,dp1=dp,lmax=lmax,z=sin(latold))
 !note that dp is the derivative wrt z and not wrt colatitude
 
       lonold=lon(i)

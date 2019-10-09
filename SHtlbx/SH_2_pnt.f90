@@ -336,7 +336,7 @@ do, j=1,npoints !loop over all points
 
    if(north)then
       !calculate derivative of associated Legendre function 
-      call PlmBar_d1(p=p,dp=dp,lmax=lmax,z=sin(lat))
+      call PlmBar_d1(p=p,dp1=dp,lmax=lmax,z=sin(lat))
       !replace p with dp and apply Chain rule ( derivative wrt negative colatitude)
       !   p=dp*cos(lat)
    else
