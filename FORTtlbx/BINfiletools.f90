@@ -1150,6 +1150,24 @@ function packindex(dat,row,col)
 
 end function packindex
 
+!!allocate dbls and dlbs_d in the binary type
+subroutine BIN_alloc_dbls(dat,ndb)
+type(BINdat):: dat  
+integer::ndb
+integer::stderr
+parameter(stderr=0)
+
+dat%ndbls=ndb
+if (associated(dat%dbls) .or. associated(dat%dbls_d)) then
+  write(stderr,*)"ERROR allocatinng meta doubles, already associated"  
+  stop
+end if
+allocate(dat%dbls_d(ndb))
+allocate(dat%dbls(ndb))
+
+
+end subroutine
+
 
 end module BINfiletools
 

@@ -109,7 +109,7 @@ LIST(APPEND F90OBJS FORTtlbx/BIN_MATH.f90 FORTtlbx/BIN_MAT_TIME.f90 FORTtlbx/BLA
 
 LIST(APPEND F90OBJS GPStlbx/GPS_XYZ_geo_trans.f90 GPStlbx/get_sinex.f90 GPStlbx/GPS_rotmat.f90 GPStlbx/get_sinexblock.f90 GPStlbx/GPS_time.f90 GPStlbx/write_sinex.f90 GPStlbx/GPS_discont_cumu.f90 GPStlbx/conv2itrf2000.f90 GPStlbx/GPS_obseq.f90)
 
-LIST(APPEND F90OBJS SHtlbx/rotfeedback.f90 SHtlbx/index.f90 SHtlbx/SH_gaus.f90 SHtlbx/SH_read.f90 SHtlbx/SH_geocmod.f90 SHtlbx/SH_write.f90 SHtlbx/SH_loadlove.f90 SHtlbx/SH_tripint.f90  SHtlbx/SH_overlapint.f90 SHtlbx/c20_replace.f90 SHtlbx/SH_loadGIA_uplift_ratio.f90 SHtlbx/SH_Love_d1_trans.f90 SHtlbx/SH_createDDK.f90 )
+LIST(APPEND F90OBJS SHtlbx/rotfeedback.f90 SHtlbx/index.f90 SHtlbx/SH_gaus.f90 SHtlbx/SH_read.f90 SHtlbx/SH_geocmod.f90 SHtlbx/SH_write.f90 SHtlbx/SH_loadlove.f90 SHtlbx/SH_tripint.f90  SHtlbx/SH_overlapint.f90 SHtlbx/c20_replace.f90 SHtlbx/SH_loadGIA_uplift_ratio.f90 SHtlbx/SH_Love_d1_trans.f90 )
 
 LIST (APPEND F90OBJS GRDtlbx/NC_write.f90 GRDtlbx/OBP_obseq.f90)
 
@@ -140,7 +140,7 @@ target_link_libraries(${prog} ${RLFLIB} ${SHTOOLS_LIBRARY} ${OPTBLAS_LIBRARIES} 
 install(TARGETS ${prog} DESTINATION bin)
 endforeach(prog in ${GPSPROG})
 
-set(SHPROG SH_fit JKcov_2_BIN SH_decormatSW SH_prod2sum_mat_openmp SH_transmat SHiso_2_colat SH_axisload SH_designmat SH_sealevmat nc_2_SH SH_2_nc SH_dump SH_basinav SH_filter SH_prod2sum_mat SH_diagreg SH_degvar SH_2_pnt SHSELEN_xtract SH_gradMAT xyz_2_SH BIN_2_JKmat)
+set(SHPROG SH_fit JKcov_2_BIN SH_decormatSW SH_prod2sum_mat_openmp SH_transmat SHiso_2_colat SH_axisload SH_designmat SH_sealevmat nc_2_SH SH_2_nc SH_dump SH_basinav SH_filter SH_prod2sum_mat SH_diagreg SH_degvar SH_2_pnt SHSELEN_xtract SH_gradMAT xyz_2_SH BIN_2_JKmat SH_createDDK)  
 foreach(prog  ${SHPROG})
 add_executable(${prog} SHtlbx/${prog}.f90)
 target_link_libraries(${prog} ${RLFLIB} ${SHTOOLS_LIBRARY} ${NETCDF_LIBRARIES} ${FFTW3_LIBRARY} ${OPTBLAS_LIBRARIES})
