@@ -109,7 +109,7 @@ LIST(APPEND F90OBJS FORTtlbx/BIN_MATH.f90 FORTtlbx/BIN_MAT_TIME.f90 FORTtlbx/BLA
 
 LIST(APPEND F90OBJS GPStlbx/GPS_XYZ_geo_trans.f90 GPStlbx/get_sinex.f90 GPStlbx/GPS_rotmat.f90 GPStlbx/get_sinexblock.f90 GPStlbx/GPS_time.f90 GPStlbx/write_sinex.f90 GPStlbx/GPS_discont_cumu.f90 GPStlbx/conv2itrf2000.f90 GPStlbx/GPS_obseq.f90)
 
-LIST(APPEND F90OBJS SHtlbx/rotfeedback.f90 SHtlbx/index.f90 SHtlbx/SH_gaus.f90 SHtlbx/SH_read.f90 SHtlbx/SH_geocmod.f90 SHtlbx/SH_write.f90 SHtlbx/SH_loadlove.f90 SHtlbx/SH_tripint.f90  SHtlbx/SH_overlapint.f90 SHtlbx/c20_replace.f90 SHtlbx/SH_loadGIA_uplift_ratio.f90 SHtlbx/SH_Love_d1_trans.f90 )
+LIST(APPEND F90OBJS SHtlbx/rotfeedback.f90 SHtlbx/index.f90 SHtlbx/SH_gaus.f90 SHtlbx/SH_read.f90 SHtlbx/SH_geocmod.f90 SHtlbx/SH_write.f90 SHtlbx/SH_loadlove.f90 SHtlbx/SH_tripint.f90  SHtlbx/SH_overlapint.f90 SHtlbx/c20_replace.f90 SHtlbx/SH_loadGIA_uplift_ratio.f90 SHtlbx/SH_Love_d1_trans.f90 SHtlbx/SH_createDDK.f90 )
 
 LIST (APPEND F90OBJS GRDtlbx/NC_write.f90 GRDtlbx/OBP_obseq.f90)
 
