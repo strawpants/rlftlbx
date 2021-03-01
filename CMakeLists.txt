@@ -39,7 +39,14 @@ if( ${USE_OPENMP} )
     endif(${OpenMP_Fortran_FLAGS})
 endif( ${USE_OPENMP} )
 
+#add allow-argument-mismatch to disable errors on type argument  mismatch on compilers GCC > 10
+include ( CheckFortranCompilerFlag )
+CHECK_FORTRAN_COMPILER_FLAG( "-fallow-argument-mismatch" ARGMISMATCH )
 
+if( ARGMISMATCH )
+  set( CMAKE_Fortran_FLAGS_RELEASE "${CMAKE_Fortran_FLAGS_RELEASE} -fallow-argument-mismatch") 
+  set( CMAKE_Fortran_FLAGS_DEBUG "${CMAKE_Fortran_FLAGS_DEBUG} -fallow-argument-mismatch") 
+endif ( ARGMISMATCH )
 
 #add make info
 set(CMAKE_VERBOSE_MAKEFILE on)
