@@ -229,7 +229,7 @@ do while (last .eq. 0) ! Loop over file ( or at least once)
       strafter=''
       strbefore=dum2(4:ind-1)
       strafter=dum2(ind+1:ind+24)
-      strlen1=len_trim(strbefore)
+      strlen1=ind-5
       strlen2=len_trim(strafter)
 !      write(0,*)strlen1,strlen2,strbefore,strafter
       if(strlen1 > 24 .or. strlen2 >24 )then
